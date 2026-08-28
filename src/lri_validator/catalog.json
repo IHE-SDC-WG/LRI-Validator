@@ -1,0 +1,86 @@
+{
+  "schema_version": "1.0.0",
+  "ruleset_version": "LRI-NAACCR-E6-2026-05-v1",
+  "profile": "LRI_NAACCR_Component / ORU^R01^ORU_R01 / HL7 v2.5.1",
+  "source": "HL7 V2.5.1 LRI E6 Ballot, May 2026 draft for review (2026-03-17)",
+  "constants": {
+    "profile_oids": {
+      "naaccr": "2.16.840.1.113883.9.195.3.31",
+      "legacy_ng_fru": "2.16.840.1.113883.9.195.3.3",
+      "common": "2.16.840.1.113883.9.195.3.22",
+      "ng": "2.16.840.1.113883.9.13",
+      "fru": "2.16.840.1.113883.9.83",
+      "conflicting_table_ng_fru": "2.16.840.1.113883.9.195.3.25"
+    },
+    "document_styles": {
+      "CAP Synoptic Summary": "synoptic summary",
+      "CAP Synoptic Segmented": "synoptic segmented",
+      "CAP eCP": "CAP eCP"
+    },
+    "metadata_loincs": ["60573-3", "60572-5", "60574-1"],
+    "obr4_loincs": [
+      "60567-5", "11529-5", "22639-9", "60570-9", "24611-6", "18743-5",
+      "35265-8", "60568-3", "60571-7", "60569-1", "33716-2", "33717-0",
+      "48807-2", "55228-1", "55229-9", "26435-8", "33719-6", "55230-7"
+    ],
+    "synoptic_obr4_loincs": ["60568-3", "60571-7", "60569-1"],
+    "narrative_obx3_loincs": [
+      "22637-3", "33746-9", "22636-5", "22633-2", "22634-0", "22635-7",
+      "22638-1", "22639-9", "35265-8", "76540-4"
+    ],
+    "deprecated_loincs": ["22639-9", "24611-6"],
+    "spm9_laterality": [
+      "385432009", "24028007", "7771000", "66459002", "51440002",
+      "399488007", "397206002"
+    ]
+  },
+  "coverage_notices": [
+    "Terminology membership is checked only for code sets completely enumerated in the pinned draft.",
+    "The validator does not claim membership validation for _NAACCR companion tables, the unresolved SPM-4 SNOMED CT subset, annual reportability lists, or the CAP eCP dictionary.",
+    "CAP eCP validation covers message structure and identifier, repeat, and parent-link syntax; it does not verify identifiers against CAP-controlled artifacts.",
+    "This draft-based validator is not a certification service and does not perform context-based or transport testing."
+  ],
+  "rules": {
+    "INPUT-001": {"severity": "error", "expected": "Provide one ER7 message without FHS/BHS wrappers.", "section": "9 Messages"},
+    "ER7-001": {"severity": "error", "expected": "Use syntactically parseable HL7 ER7.", "section": "9.1 ORU^R01^ORU_R01"},
+    "LRI-13": {"severity": "error", "expected": "MSH-1 is |.", "section": "10.1 MSH"},
+    "LRI-14": {"severity": "error", "expected": "MSH-2 is ^~\\& or ^~\\&#.", "section": "10.1 MSH"},
+    "LRI-15": {"severity": "error", "expected": "MSH-9 is ORU^R01^ORU_R01.", "section": "10.1 MSH"},
+    "LRI-16": {"severity": "error", "expected": "MSH-12.1 is 2.5.1.", "section": "10.1 MSH"},
+    "LRI-11": {"severity": "error", "expected": "Declare legacy NG-FRU .3 or Common .22 + NG .13 + FRU .83.", "section": "10.1 MSH; LRI-11"},
+    "LRI-NAACCR-PROFILE": {"severity": "error", "expected": "Declare LRI_NAACCR_Component OID ending .31 in MSH-21.", "section": "8.3.14 and 10.1 MSH"},
+    "DRAFT-CONFLICT-01": {"severity": "information", "expected": "Apply literal LRI-11; table OID .25 is not accepted as its substitute.", "section": "8.4 vs. 10.1 LRI-11"},
+    "STRUCTURE-001": {"severity": "error", "expected": "Use the constrained ORU_R01 segment order and cardinalities.", "section": "9.1 Table 8-1"},
+    "DSC-001": {"severity": "error", "expected": "Do not send DSC.", "section": "9.1 Table 8-1"},
+    "FIELD-R": {"severity": "error", "expected": "Populate every R field and applicable conditional field.", "section": "10 Segment Definitions"},
+    "FIELD-RE": {"severity": "warning", "expected": "Populate RE data when known.", "section": "10 Segment Definitions"},
+    "CARDINALITY-001": {"severity": "error", "expected": "Do not exceed NAACCR field or segment cardinality.", "section": "9-10 Message and Segment Definitions"},
+    "SETID-001": {"severity": "error", "expected": "Set IDs start at 1 and increase sequentially in their scope.", "section": "10 Segment Definitions"},
+    "LRI-23": {"severity": "error", "expected": "ORC-2 equals OBR-2 in the order group when valued.", "section": "10.8 ORC"},
+    "LRI-24": {"severity": "error", "expected": "ORC-3 equals OBR-3 in the order group.", "section": "10.8 ORC"},
+    "LRI-25": {"severity": "error", "expected": "ORC-12 equals OBR-16 in the order group.", "section": "10.8 ORC"},
+    "LRI-28": {"severity": "error", "expected": "FRU filler order numbers are unique across order groups.", "section": "10.8 ORC"},
+    "LRI-33": {"severity": "error", "expected": "OBR-8 is equal to or later than OBR-7.", "section": "10.9 OBR"},
+    "LRI-34": {"severity": "error", "expected": "OBR-1 is sequential across order groups.", "section": "10.9 OBR"},
+    "STATUS-001": {"severity": "error", "expected": "OBR-25 matches the statuses in its OBX-11 fields.", "section": "10.9.3 Table 9-14"},
+    "DATE-001": {"severity": "error", "expected": "Use valid HL7 date/time syntax and preserve stated date relationships.", "section": "7.4 and 10.9-10.13"},
+    "OBR4-001": {"severity": "warning", "expected": "Use an applicable OBR-4 LOINC from Table 7.13 when the report kind is enumerated.", "section": "7.9.1 Table 7.13"},
+    "STYLE-001": {"severity": "error", "expected": "Use a recognized first-OBX report style declaration for synoptic reports.", "section": "7.7.7-7.7.9"},
+    "STYLE-002": {"severity": "error", "expected": "Use the three ordered metadata OBXs with the stated LOINCs and datatypes.", "section": "7.7.7-7.7.9"},
+    "NARRATIVE-001": {"severity": "error", "expected": "Use one complete OBX per narrative report or report section.", "section": "7.5.2 and 10.10 OBX"},
+    "OBX4-001": {"severity": "error", "expected": "Populate a valid OBX-4 when repeated OBX-3 identifiers require disambiguation.", "section": "7.8"},
+    "ECP-001": {"severity": "error", "expected": "Use full CAP eCP Ckey identifiers and CAPECP coding systems.", "section": "7.7.9 eCP IDs"},
+    "ECP-002": {"severity": "error", "expected": "Encode repeats as __n with CAPECP.RPT plus original IDs and sequential suffixes.", "section": "7.7.9 Repeating Data Elements"},
+    "ECP-003": {"severity": "error", "expected": "Use +Ckey for parent links or a bare selected-LIR Ckey for LIR response links.", "section": "7.7.9 OBX-4 Links"},
+    "DEPRECATED-001": {"severity": "warning", "expected": "Use the replacement LOINC identified by the draft.", "section": "7.9.1 Tables 7.13-7.14"},
+    "LRI-NAACCR-01": {"severity": "error", "expected": "CNN.10 is valued when the principal result interpreter is sent.", "section": "11 CNN_01"},
+    "LRI-NAACCR-02": {"severity": "error", "expected": "CNN.11 is NPI, MD, or ISO.", "section": "11 CNN_01"},
+    "LRI-NAACCR-03": {"severity": "error", "expected": "EI_03.3 is a valid NPI when EI_03.4 is NPI.", "section": "11 EI_03"},
+    "LRI-NAACCR-04": {"severity": "error", "expected": "EI_03.3 starts with a 2-4 letter state/province prefix when EI_03.4 is MD.", "section": "11 EI_03"},
+    "LRI-NAACCR-05": {"severity": "error", "expected": "EI_03.3 is an ISO OID when EI_03.4 is ISO.", "section": "11 EI_03"},
+    "LRI-NAACCR-06": {"severity": "error", "expected": "HD_04.2 is a valid NPI when HD_04.3 is NPI.", "section": "11 HD_04"},
+    "LRI-NAACCR-07": {"severity": "error", "expected": "HD_04.2 starts with a 2-4 letter state/province prefix when HD_04.3 is MD.", "section": "11 HD_04"},
+    "LRI-NAACCR-08": {"severity": "error", "expected": "HD_04.2 is an ISO OID when HD_04.3 is ISO.", "section": "11 HD_04"},
+    "SPM9-001": {"severity": "error", "expected": "When SPM-9 uses SCT, use a laterality code enumerated in the draft.", "section": "12.2 SPM-9"}
+  }
+}

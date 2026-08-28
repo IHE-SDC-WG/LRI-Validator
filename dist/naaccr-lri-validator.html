@@ -1,0 +1,921 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>NAACCR LRI offline validator</title>
+  <style>
+    :root { color-scheme: light; --ink:#17202a; --muted:#5c6773; --line:#ccd4dc; --paper:#fff; --wash:#f4f7f9; --accent:#155f75; --accent2:#0d4252; --error:#a62b24; --warning:#805800; --info:#285b8f; --ok:#17633b; }
+    * { box-sizing:border-box; }
+    body { margin:0; font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; color:var(--ink); background:var(--wash); }
+    header { background:var(--accent2); color:#fff; padding:28px max(24px,calc((100vw - 1180px)/2)); }
+    header p { margin:7px 0 0; max-width:760px; color:#d9edf2; }
+    h1 { margin:0; font-size:clamp(24px,3vw,36px); letter-spacing:-.02em; }
+    h2 { margin:0 0 14px; font-size:20px; }
+    main { max-width:1180px; margin:0 auto; padding:24px; }
+    .privacy { margin:0 0 20px; padding:13px 16px; border-left:4px solid var(--accent); background:#eaf4f6; }
+    .grid { display:grid; grid-template-columns:minmax(0,1.08fr) minmax(360px,.92fr); gap:20px; align-items:start; }
+    .card { background:var(--paper); border:1px solid var(--line); border-radius:10px; box-shadow:0 2px 8px rgba(23,32,42,.06); padding:20px; }
+    label { font-weight:650; }
+    textarea { width:100%; min-height:410px; margin-top:8px; resize:vertical; border:1px solid #9ba8b4; border-radius:6px; padding:12px; font:13px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace; color:#15212b; background:#fbfcfd; tab-size:2; }
+    textarea:focus,button:focus,select:focus,input:focus { outline:3px solid #8fc7d5; outline-offset:2px; }
+    .row { display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-top:12px; }
+    button,.button { border:1px solid var(--accent); border-radius:6px; background:var(--accent); color:#fff; padding:9px 14px; font:inherit; font-weight:650; cursor:pointer; }
+    button.secondary,.button.secondary { color:var(--accent2); background:#fff; }
+    button:disabled { opacity:.55; cursor:not-allowed; }
+    input[type=file] { max-width:100%; }
+    select { padding:8px; border:1px solid #9ba8b4; border-radius:6px; background:#fff; font:inherit; }
+    .status { display:grid; grid-template-columns:1fr auto; gap:12px; align-items:start; border:1px solid var(--line); border-radius:8px; padding:14px; background:var(--wash); }
+    .status strong { font-size:18px; }
+    .status.pass { border-left:6px solid var(--ok); }
+    .status.fail { border-left:6px solid var(--error); }
+    .counts { display:flex; flex-wrap:wrap; gap:8px; margin:14px 0; }
+    .count { border:1px solid currentColor; border-radius:999px; padding:3px 9px; font-weight:650; }
+    .error { color:var(--error); } .warning { color:var(--warning); } .information { color:var(--info); }
+    fieldset { border:0; padding:0; margin:13px 0; }
+    legend { font-weight:650; margin-bottom:5px; }
+    fieldset label { font-weight:500; margin-right:13px; white-space:nowrap; }
+    .findings { list-style:none; padding:0; margin:14px 0 0; max-height:550px; overflow:auto; }
+    .finding { margin:0 0 9px; }
+    .finding button { width:100%; text-align:left; color:var(--ink); background:#fff; border-color:var(--line); padding:11px; font-weight:400; }
+    .finding button:hover { border-color:var(--accent); background:#f7fbfc; }
+    .finding-head { display:flex; gap:8px; justify-content:space-between; margin-bottom:5px; }
+    .severity { font-weight:750; text-transform:uppercase; font-size:12px; letter-spacing:.04em; }
+    .rule { font:12px ui-monospace,SFMono-Regular,Menlo,monospace; color:var(--muted); }
+    .finding p { margin:4px 0; }
+    .finding small { color:var(--muted); }
+    .empty { color:var(--muted); padding:24px 0; text-align:center; }
+    details { margin-top:15px; }
+    details li { margin:6px 0; }
+    .error-box { border-left:5px solid var(--error); background:#fff0ef; padding:12px; margin:12px 0 0; }
+    footer { max-width:1180px; margin:0 auto; padding:0 24px 28px; color:var(--muted); font-size:13px; }
+    [hidden] { display:none !important; }
+    @media (max-width:850px) { .grid { grid-template-columns:1fr; } textarea { min-height:300px; } }
+    @media print { body { background:#fff; } header { color:#000; background:#fff; padding:0 0 18px; } header p { color:#333; } main { padding:0; max-width:none; } .privacy,.editor,.controls,footer { display:none !important; } .grid { display:block; } .card { border:0; box-shadow:none; padding:0; } .findings { max-height:none; overflow:visible; } .finding button { break-inside:avoid; } }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>NAACCR LRI offline validator</h1>
+    <p>Context-free checks for one HL7 v2.5.1 ORU_R01 cancer-pathology message, pinned to the May 2026 LRI ballot draft.</p>
+  </header>
+  <main>
+    <p class="privacy"><strong>Privacy:</strong> Your message stays in this tab. This file makes no network requests and uses no browser storage. Downloaded and printed reports omit the raw message and message values.</p>
+    <div class="grid">
+      <form id="input-form" class="card editor" aria-labelledby="input-heading">
+        <h2 id="input-heading">Message input</h2>
+        <label for="message">Paste one ER7 message</label>
+        <textarea id="message" spellcheck="false" aria-describedby="input-help" placeholder="MSH|^~\&amp;|..."></textarea>
+        <p id="input-help">CR, LF, and CRLF endings are accepted. Complete MLLP framing is removed. Batches and multiple messages are rejected.</p>
+        <div class="row">
+          <label for="file">Choose a message file</label>
+          <input id="file" type="file" accept=".hl7,.er7,.txt,text/plain">
+        </div>
+        <div class="row">
+          <label for="sample">Synthetic sample</label>
+          <select id="sample"><option value="">Select a report style</option></select>
+          <button id="load-sample" class="secondary" type="button">Load sample</button>
+        </div>
+        <div class="row">
+          <button id="validate" type="button">Validate message</button>
+          <button id="clear" class="secondary" type="reset">Clear</button>
+        </div>
+        <div id="startup-error" class="error-box" role="alert">The interactive controls did not start. Open this HTML file in a current version of Safari, Chrome, Firefox, or Edge.</div>
+        <noscript><div class="error-box" role="alert">JavaScript is disabled. Enable it to validate messages in this offline file.</div></noscript>
+        <div id="input-error" class="error-box" role="alert" hidden></div>
+      </form>
+      <section class="card" aria-labelledby="results-heading">
+        <h2 id="results-heading">Validation report</h2>
+        <div id="no-report" class="empty">Enter a message and validate it to see categorized findings.</div>
+        <div id="report" hidden>
+          <div id="status" class="status" role="status" aria-live="polite">
+            <div><strong id="result-label"></strong><div id="style-label"></div></div>
+            <div id="ruleset-label" class="rule"></div>
+          </div>
+          <div id="counts" class="counts"></div>
+          <div class="controls">
+            <fieldset><legend>Show severities</legend>
+              <label><input type="checkbox" data-severity="error" checked> Errors</label>
+              <label><input type="checkbox" data-severity="warning" checked> Warnings</label>
+              <label><input type="checkbox" data-severity="information" checked> Information</label>
+            </fieldset>
+            <div class="row">
+              <button id="download" class="secondary" type="button">Download JSON</button>
+              <button id="print" class="secondary" type="button">Print report</button>
+            </div>
+          </div>
+          <ol id="findings" class="findings"></ol>
+          <details><summary>Coverage notices</summary><ul id="coverage"></ul></details>
+        </div>
+      </section>
+    </div>
+  </main>
+  <footer>Draft-based implementation aid. Not an HL7 or NIST certification service.</footer>
+  <script>
+    window.onerror = function (message, source, line) {
+      var box = document.getElementById("startup-error");
+      if (box) {
+        box.textContent = "Startup error: " + String(message) + (line ? " (line " + line + ")." : ".");
+        box.hidden = false;
+      }
+      return false;
+    };
+  </script>
+  <script>window.__LRI_CATALOG__ = {
+  "constants": {
+    "deprecated_loincs": [
+      "22639-9",
+      "24611-6"
+    ],
+    "document_styles": {
+      "CAP Synoptic Segmented": "synoptic segmented",
+      "CAP Synoptic Summary": "synoptic summary",
+      "CAP eCP": "CAP eCP"
+    },
+    "metadata_loincs": [
+      "60573-3",
+      "60572-5",
+      "60574-1"
+    ],
+    "narrative_obx3_loincs": [
+      "22637-3",
+      "33746-9",
+      "22636-5",
+      "22633-2",
+      "22634-0",
+      "22635-7",
+      "22638-1",
+      "22639-9",
+      "35265-8",
+      "76540-4"
+    ],
+    "obr4_loincs": [
+      "60567-5",
+      "11529-5",
+      "22639-9",
+      "60570-9",
+      "24611-6",
+      "18743-5",
+      "35265-8",
+      "60568-3",
+      "60571-7",
+      "60569-1",
+      "33716-2",
+      "33717-0",
+      "48807-2",
+      "55228-1",
+      "55229-9",
+      "26435-8",
+      "33719-6",
+      "55230-7"
+    ],
+    "profile_oids": {
+      "common": "2.16.840.1.113883.9.195.3.22",
+      "conflicting_table_ng_fru": "2.16.840.1.113883.9.195.3.25",
+      "fru": "2.16.840.1.113883.9.83",
+      "legacy_ng_fru": "2.16.840.1.113883.9.195.3.3",
+      "naaccr": "2.16.840.1.113883.9.195.3.31",
+      "ng": "2.16.840.1.113883.9.13"
+    },
+    "spm9_laterality": [
+      "385432009",
+      "24028007",
+      "7771000",
+      "66459002",
+      "51440002",
+      "399488007",
+      "397206002"
+    ],
+    "synoptic_obr4_loincs": [
+      "60568-3",
+      "60571-7",
+      "60569-1"
+    ]
+  },
+  "coverage_notices": [
+    "Terminology membership is checked only for code sets completely enumerated in the pinned draft.",
+    "The validator does not claim membership validation for _NAACCR companion tables, the unresolved SPM-4 SNOMED CT subset, annual reportability lists, or the CAP eCP dictionary.",
+    "CAP eCP validation covers message structure and identifier, repeat, and parent-link syntax; it does not verify identifiers against CAP-controlled artifacts.",
+    "This draft-based validator is not a certification service and does not perform context-based or transport testing."
+  ],
+  "profile": "LRI_NAACCR_Component / ORU^R01^ORU_R01 / HL7 v2.5.1",
+  "rules": {
+    "CARDINALITY-001": {
+      "expected": "Do not exceed NAACCR field or segment cardinality.",
+      "section": "9-10 Message and Segment Definitions",
+      "severity": "error"
+    },
+    "DATE-001": {
+      "expected": "Use valid HL7 date/time syntax and preserve stated date relationships.",
+      "section": "7.4 and 10.9-10.13",
+      "severity": "error"
+    },
+    "DEPRECATED-001": {
+      "expected": "Use the replacement LOINC identified by the draft.",
+      "section": "7.9.1 Tables 7.13-7.14",
+      "severity": "warning"
+    },
+    "DRAFT-CONFLICT-01": {
+      "expected": "Apply literal LRI-11; table OID .25 is not accepted as its substitute.",
+      "section": "8.4 vs. 10.1 LRI-11",
+      "severity": "information"
+    },
+    "DSC-001": {
+      "expected": "Do not send DSC.",
+      "section": "9.1 Table 8-1",
+      "severity": "error"
+    },
+    "ECP-001": {
+      "expected": "Use full CAP eCP Ckey identifiers and CAPECP coding systems.",
+      "section": "7.7.9 eCP IDs",
+      "severity": "error"
+    },
+    "ECP-002": {
+      "expected": "Encode repeats as __n with CAPECP.RPT plus original IDs and sequential suffixes.",
+      "section": "7.7.9 Repeating Data Elements",
+      "severity": "error"
+    },
+    "ECP-003": {
+      "expected": "Use +Ckey for parent links or a bare selected-LIR Ckey for LIR response links.",
+      "section": "7.7.9 OBX-4 Links",
+      "severity": "error"
+    },
+    "ER7-001": {
+      "expected": "Use syntactically parseable HL7 ER7.",
+      "section": "9.1 ORU^R01^ORU_R01",
+      "severity": "error"
+    },
+    "FIELD-R": {
+      "expected": "Populate every R field and applicable conditional field.",
+      "section": "10 Segment Definitions",
+      "severity": "error"
+    },
+    "FIELD-RE": {
+      "expected": "Populate RE data when known.",
+      "section": "10 Segment Definitions",
+      "severity": "warning"
+    },
+    "INPUT-001": {
+      "expected": "Provide one ER7 message without FHS/BHS wrappers.",
+      "section": "9 Messages",
+      "severity": "error"
+    },
+    "LRI-11": {
+      "expected": "Declare legacy NG-FRU .3 or Common .22 + NG .13 + FRU .83.",
+      "section": "10.1 MSH; LRI-11",
+      "severity": "error"
+    },
+    "LRI-13": {
+      "expected": "MSH-1 is |.",
+      "section": "10.1 MSH",
+      "severity": "error"
+    },
+    "LRI-14": {
+      "expected": "MSH-2 is ^~\\& or ^~\\&#.",
+      "section": "10.1 MSH",
+      "severity": "error"
+    },
+    "LRI-15": {
+      "expected": "MSH-9 is ORU^R01^ORU_R01.",
+      "section": "10.1 MSH",
+      "severity": "error"
+    },
+    "LRI-16": {
+      "expected": "MSH-12.1 is 2.5.1.",
+      "section": "10.1 MSH",
+      "severity": "error"
+    },
+    "LRI-23": {
+      "expected": "ORC-2 equals OBR-2 in the order group when valued.",
+      "section": "10.8 ORC",
+      "severity": "error"
+    },
+    "LRI-24": {
+      "expected": "ORC-3 equals OBR-3 in the order group.",
+      "section": "10.8 ORC",
+      "severity": "error"
+    },
+    "LRI-25": {
+      "expected": "ORC-12 equals OBR-16 in the order group.",
+      "section": "10.8 ORC",
+      "severity": "error"
+    },
+    "LRI-28": {
+      "expected": "FRU filler order numbers are unique across order groups.",
+      "section": "10.8 ORC",
+      "severity": "error"
+    },
+    "LRI-33": {
+      "expected": "OBR-8 is equal to or later than OBR-7.",
+      "section": "10.9 OBR",
+      "severity": "error"
+    },
+    "LRI-34": {
+      "expected": "OBR-1 is sequential across order groups.",
+      "section": "10.9 OBR",
+      "severity": "error"
+    },
+    "LRI-NAACCR-01": {
+      "expected": "CNN.10 is valued when the principal result interpreter is sent.",
+      "section": "11 CNN_01",
+      "severity": "error"
+    },
+    "LRI-NAACCR-02": {
+      "expected": "CNN.11 is NPI, MD, or ISO.",
+      "section": "11 CNN_01",
+      "severity": "error"
+    },
+    "LRI-NAACCR-03": {
+      "expected": "EI_03.3 is a valid NPI when EI_03.4 is NPI.",
+      "section": "11 EI_03",
+      "severity": "error"
+    },
+    "LRI-NAACCR-04": {
+      "expected": "EI_03.3 starts with a 2-4 letter state/province prefix when EI_03.4 is MD.",
+      "section": "11 EI_03",
+      "severity": "error"
+    },
+    "LRI-NAACCR-05": {
+      "expected": "EI_03.3 is an ISO OID when EI_03.4 is ISO.",
+      "section": "11 EI_03",
+      "severity": "error"
+    },
+    "LRI-NAACCR-06": {
+      "expected": "HD_04.2 is a valid NPI when HD_04.3 is NPI.",
+      "section": "11 HD_04",
+      "severity": "error"
+    },
+    "LRI-NAACCR-07": {
+      "expected": "HD_04.2 starts with a 2-4 letter state/province prefix when HD_04.3 is MD.",
+      "section": "11 HD_04",
+      "severity": "error"
+    },
+    "LRI-NAACCR-08": {
+      "expected": "HD_04.2 is an ISO OID when HD_04.3 is ISO.",
+      "section": "11 HD_04",
+      "severity": "error"
+    },
+    "LRI-NAACCR-PROFILE": {
+      "expected": "Declare LRI_NAACCR_Component OID ending .31 in MSH-21.",
+      "section": "8.3.14 and 10.1 MSH",
+      "severity": "error"
+    },
+    "NARRATIVE-001": {
+      "expected": "Use one complete OBX per narrative report or report section.",
+      "section": "7.5.2 and 10.10 OBX",
+      "severity": "error"
+    },
+    "OBR4-001": {
+      "expected": "Use an applicable OBR-4 LOINC from Table 7.13 when the report kind is enumerated.",
+      "section": "7.9.1 Table 7.13",
+      "severity": "warning"
+    },
+    "OBX4-001": {
+      "expected": "Populate a valid OBX-4 when repeated OBX-3 identifiers require disambiguation.",
+      "section": "7.8",
+      "severity": "error"
+    },
+    "SETID-001": {
+      "expected": "Set IDs start at 1 and increase sequentially in their scope.",
+      "section": "10 Segment Definitions",
+      "severity": "error"
+    },
+    "SPM9-001": {
+      "expected": "When SPM-9 uses SCT, use a laterality code enumerated in the draft.",
+      "section": "12.2 SPM-9",
+      "severity": "error"
+    },
+    "STATUS-001": {
+      "expected": "OBR-25 matches the statuses in its OBX-11 fields.",
+      "section": "10.9.3 Table 9-14",
+      "severity": "error"
+    },
+    "STRUCTURE-001": {
+      "expected": "Use the constrained ORU_R01 segment order and cardinalities.",
+      "section": "9.1 Table 8-1",
+      "severity": "error"
+    },
+    "STYLE-001": {
+      "expected": "Use a recognized first-OBX report style declaration for synoptic reports.",
+      "section": "7.7.7-7.7.9",
+      "severity": "error"
+    },
+    "STYLE-002": {
+      "expected": "Use the three ordered metadata OBXs with the stated LOINCs and datatypes.",
+      "section": "7.7.7-7.7.9",
+      "severity": "error"
+    }
+  },
+  "ruleset_version": "LRI-NAACCR-E6-2026-05-v1",
+  "schema_version": "1.0.0",
+  "source": "HL7 V2.5.1 LRI E6 Ballot, May 2026 draft for review (2026-03-17)"
+};
+window.__LRI_SAMPLES__ = {};
+window.__LRI_SAMPLES__["cap-ecp"] = [
+  "MSH|^~\\&|SYNAPP^2.16.840.1.113883.19.77^ISO|SYNLAB^2.16.840.1.113883.19.77^ISO|REGAPP^2.16.840.1.113883.19.77^ISO|REGISTRY^2.16.840.1.113883.19.77^ISO|202608281000-0400||ORU^R01^ORU_R01|SYN0001|P|2.5.1|||NE|AL|CAN||eng^English^ISO639||LRI_NAACCR_Component^^2.16.840.1.113883.9.195.3.31^ISO~LRI_Common_Component_V3^^2.16.840.1.113883.9.195.3.22^ISO~LRI_NG_Component_R1^^2.16.840.1.113883.9.13^ISO~LAB_FRU_Component^^2.16.840.1.113883.9.83^ISO",
+  "PID|1||PAT0001^^^LOCAL&2.16.840.1.113883.19.77&ISO^MR||Lin^Case^^^^^^L||19800101|F",
+  "PV1|1|O",
+  "ORC|RE||FILL0001^SYNLAB^2.16.840.1.113883.19.77^ISO|||||||||PRV001^Lin^Morgan^^^^^^LOCAL&2.16.840.1.113883.19.77&ISO|||||||||Synthetic Pathology Laboratory^L^^^^LOCAL&2.16.840.1.113883.19.77&ISO",
+  "OBR|1||FILL0001^SYNLAB^2.16.840.1.113883.19.77^ISO|60568-3^Synoptic report^LN|||202608270900-0400|||||||||PRV001^Lin^Morgan^^^^^^LOCAL&2.16.840.1.113883.19.77&ISO|||||4165550101|202608271200-0400|||F|||||||PRV001&Lin&Morgan&&&&&&&2.16.840.1.113883.19.77&ISO",
+  "OBX|1|ST|60573-3^Report template source^LN||CAP eCP||||||F",
+  "OBX|2|CWE|60572-5^Report template ID^LN||100.100004300^Synthetic Protocol^CAPECP||||||F",
+  "OBX|3|ST|60574-1^Report template version ID^LN||1.000.000.REL||||||F",
+  "OBX|4|CWE|200.100004300^Procedure^CAPECP||201.100004300^Synthetic excision^CAPECP||||||F",
+  "SPM|1|^SPEC0001&SYNLAB&2.16.840.1.113883.19.77&ISO||TISS^Tissue specimen^HL70487|||||||||||||202608270900-0400|202608271000-0400"
+].join("\n") + "\n";
+window.__LRI_SAMPLES__["structured-narrative"] = [
+  "MSH|^~\\&|SYNAPP^2.16.840.1.113883.19.77^ISO|SYNLAB^2.16.840.1.113883.19.77^ISO|REGAPP^2.16.840.1.113883.19.77^ISO|REGISTRY^2.16.840.1.113883.19.77^ISO|202608281000-0400||ORU^R01^ORU_R01|SYN0001|P|2.5.1|||NE|AL|CAN||eng^English^ISO639||LRI_NAACCR_Component^^2.16.840.1.113883.9.195.3.31^ISO~LRI_Common_Component_V3^^2.16.840.1.113883.9.195.3.22^ISO~LRI_NG_Component_R1^^2.16.840.1.113883.9.13^ISO~LAB_FRU_Component^^2.16.840.1.113883.9.83^ISO",
+  "PID|1||PAT0001^^^LOCAL&2.16.840.1.113883.19.77&ISO^MR||Lin^Case^^^^^^L||19800101|F",
+  "PV1|1|O",
+  "ORC|RE||FILL0001^SYNLAB^2.16.840.1.113883.19.77^ISO|||||||||PRV001^Lin^Morgan^^^^^^LOCAL&2.16.840.1.113883.19.77&ISO|||||||||Synthetic Pathology Laboratory^L^^^^LOCAL&2.16.840.1.113883.19.77&ISO",
+  "OBR|1||FILL0001^SYNLAB^2.16.840.1.113883.19.77^ISO|11529-5^Surgical pathology study^LN|||202608270900-0400|||||||||PRV001^Lin^Morgan^^^^^^LOCAL&2.16.840.1.113883.19.77&ISO|||||4165550101|202608271200-0400|||F|||||||PRV001&Lin&Morgan&&&&&&&2.16.840.1.113883.19.77&ISO",
+  "OBX|1|TX|22634-0^Pathology report.gross observation^LN|1|Synthetic gross description||||||F|||202608270900-0400|||PRV001^Lin^Morgan^^^^^^LOCAL&2.16.840.1.113883.19.77&ISO|||202608271130-0400",
+  "OBX|2|TX|22637-3^Path report.final diagnosis^LN|1|Synthetic final diagnosis||||||F|||202608270900-0400|||PRV001^Lin^Morgan^^^^^^LOCAL&2.16.840.1.113883.19.77&ISO|||202608271130-0400",
+  "SPM|1|^SPEC0001&SYNLAB&2.16.840.1.113883.19.77&ISO||TISS^Tissue specimen^HL70487|||||||||||||202608270900-0400|202608271000-0400"
+].join("\n") + "\n";
+window.__LRI_SAMPLES__["synoptic-segmented"] = [
+  "MSH|^~\\&|SYNAPP^2.16.840.1.113883.19.77^ISO|SYNLAB^2.16.840.1.113883.19.77^ISO|REGAPP^2.16.840.1.113883.19.77^ISO|REGISTRY^2.16.840.1.113883.19.77^ISO|202608281000-0400||ORU^R01^ORU_R01|SYN0001|P|2.5.1|||NE|AL|CAN||eng^English^ISO639||LRI_NAACCR_Component^^2.16.840.1.113883.9.195.3.31^ISO~LRI_Common_Component_V3^^2.16.840.1.113883.9.195.3.22^ISO~LRI_NG_Component_R1^^2.16.840.1.113883.9.13^ISO~LAB_FRU_Component^^2.16.840.1.113883.9.83^ISO",
+  "PID|1||PAT0001^^^LOCAL&2.16.840.1.113883.19.77&ISO^MR||Lin^Case^^^^^^L||19800101|F",
+  "PV1|1|O",
+  "ORC|RE||FILL0001^SYNLAB^2.16.840.1.113883.19.77^ISO|||||||||PRV001^Lin^Morgan^^^^^^LOCAL&2.16.840.1.113883.19.77&ISO|||||||||Synthetic Pathology Laboratory^L^^^^LOCAL&2.16.840.1.113883.19.77&ISO",
+  "OBR|1||FILL0001^SYNLAB^2.16.840.1.113883.19.77^ISO|60568-3^Synoptic report^LN|||202608270900-0400|||||||||PRV001^Lin^Morgan^^^^^^LOCAL&2.16.840.1.113883.19.77&ISO|||||4165550101|202608271200-0400|||F|||||||PRV001&Lin&Morgan&&&&&&&2.16.840.1.113883.19.77&ISO",
+  "OBX|1|TX|60573-3^Report template source^LN||CAP Synoptic Segmented||||||F",
+  "OBX|2|TX|60572-5^Report template ID^LN||Synthetic Resection Template||||||F",
+  "OBX|3|TX|60574-1^Report template version ID^LN||1.0.0||||||F",
+  "OBX|4|TX|^Procedure||Synthetic excision||||||F",
+  "OBX|5|TX|^Final diagnosis||Synthetic carcinoma||||||F",
+  "SPM|1|^SPEC0001&SYNLAB&2.16.840.1.113883.19.77&ISO||TISS^Tissue specimen^HL70487|||||||||||||202608270900-0400|202608271000-0400"
+].join("\n") + "\n";
+window.__LRI_SAMPLES__["synoptic-summary"] = [
+  "MSH|^~\\&|SYNAPP^2.16.840.1.113883.19.77^ISO|SYNLAB^2.16.840.1.113883.19.77^ISO|REGAPP^2.16.840.1.113883.19.77^ISO|REGISTRY^2.16.840.1.113883.19.77^ISO|202608281000-0400||ORU^R01^ORU_R01|SYN0001|P|2.5.1|||NE|AL|CAN||eng^English^ISO639||LRI_NAACCR_Component^^2.16.840.1.113883.9.195.3.31^ISO~LRI_Common_Component_V3^^2.16.840.1.113883.9.195.3.22^ISO~LRI_NG_Component_R1^^2.16.840.1.113883.9.13^ISO~LAB_FRU_Component^^2.16.840.1.113883.9.83^ISO",
+  "PID|1||PAT0001^^^LOCAL&2.16.840.1.113883.19.77&ISO^MR||Lin^Case^^^^^^L||19800101|F",
+  "PV1|1|O",
+  "ORC|RE||FILL0001^SYNLAB^2.16.840.1.113883.19.77^ISO|||||||||PRV001^Lin^Morgan^^^^^^LOCAL&2.16.840.1.113883.19.77&ISO|||||||||Synthetic Pathology Laboratory^L^^^^LOCAL&2.16.840.1.113883.19.77&ISO",
+  "OBR|1||FILL0001^SYNLAB^2.16.840.1.113883.19.77^ISO|60568-3^Synoptic report^LN|||202608270900-0400|||||||||PRV001^Lin^Morgan^^^^^^LOCAL&2.16.840.1.113883.19.77&ISO|||||4165550101|202608271200-0400|||F|||||||PRV001&Lin&Morgan&&&&&&&2.16.840.1.113883.19.77&ISO",
+  "OBX|1|TX|60573-3^Report template source^LN||CAP Synoptic Summary||||||F",
+  "OBX|2|TX|60572-5^Report template ID^LN||Synthetic Resection Template||||||F",
+  "OBX|3|TX|60574-1^Report template version ID^LN||1.0.0||||||F",
+  "OBX|4|TX|60568-3^Path report.synoptic summary^LN||Procedure: Synthetic excision\\.br\\Diagnosis: Synthetic carcinoma||||||F",
+  "SPM|1|^SPEC0001&SYNLAB&2.16.840.1.113883.19.77&ISO||TISS^Tissue specimen^HL70487|||||||||||||202608270900-0400|202608271000-0400"
+].join("\n") + "\n";
+window.__LRI_SAMPLES__["unstructured-narrative"] = [
+  "MSH|^~\\&|SYNAPP^2.16.840.1.113883.19.77^ISO|SYNLAB^2.16.840.1.113883.19.77^ISO|REGAPP^2.16.840.1.113883.19.77^ISO|REGISTRY^2.16.840.1.113883.19.77^ISO|202608281000-0400||ORU^R01^ORU_R01|SYN0001|P|2.5.1|||NE|AL|CAN||eng^English^ISO639||LRI_NAACCR_Component^^2.16.840.1.113883.9.195.3.31^ISO~LRI_Common_Component_V3^^2.16.840.1.113883.9.195.3.22^ISO~LRI_NG_Component_R1^^2.16.840.1.113883.9.13^ISO~LAB_FRU_Component^^2.16.840.1.113883.9.83^ISO",
+  "PID|1||PAT0001^^^LOCAL&2.16.840.1.113883.19.77&ISO^MR||Lin^Case^^^^^^L||19800101|F",
+  "PV1|1|O",
+  "ORC|RE||FILL0001^SYNLAB^2.16.840.1.113883.19.77^ISO|||||||||PRV001^Lin^Morgan^^^^^^LOCAL&2.16.840.1.113883.19.77&ISO|||||||||Synthetic Pathology Laboratory^L^^^^LOCAL&2.16.840.1.113883.19.77&ISO",
+  "OBR|1||FILL0001^SYNLAB^2.16.840.1.113883.19.77^ISO|11529-5^Surgical pathology study^LN|||202608270900-0400|||||||||PRV001^Lin^Morgan^^^^^^LOCAL&2.16.840.1.113883.19.77&ISO|||||4165550101|202608271200-0400|||F|||||||PRV001&Lin&Morgan&&&&&&&2.16.840.1.113883.19.77&ISO",
+  "OBX|1|TX|22637-3^Path report.final diagnosis^LN||Synthetic diagnostic statement||||||F|||202608270900-0400|||PRV001^Lin^Morgan^^^^^^LOCAL&2.16.840.1.113883.19.77&ISO|||202608271130-0400",
+  "SPM|1|^SPEC0001&SYNLAB&2.16.840.1.113883.19.77&ISO||TISS^Tissue specimen^HL70487|||||||||||||202608270900-0400|202608271000-0400"
+].join("\n") + "\n";</script>
+  <script>(function (root, factory) {
+  const api = factory(root.__LRI_CATALOG__ || {});
+  if (typeof module === "object" && module.exports) module.exports = api;
+  root.LriValidator = api;
+})(typeof globalThis !== "undefined" ? globalThis : this, function (CATALOG) {
+  "use strict";
+
+  const C = CATALOG.constants || {};
+  const RULES = CATALOG.rules || {};
+  const REQUIRED = {
+    MSH: [1, 2, 4, 7, 9, 10, 11, 12, 15, 16, 21], PID: [1, 3, 5, 8], PV1: [1, 2],
+    ORC: [1, 3, 12, 21], OBR: [1, 3, 4, 7, 16, 21, 22, 25, 32], OBX: [1, 2, 3, 5, 11],
+    SPM: [1, 2, 4, 17, 18], NTE: [1, 3]
+  };
+  const EXPECTED = {
+    MSH: [3, 5, 6, 13, 14, 17, 19], PID: [7, 10, 11, 13, 14, 15, 16, 17, 18, 22, 30, 31, 32, 39],
+    PV1: [7, 8, 9, 17], ORC: [2, 4, 22, 23, 24, 28], OBR: [2, 10, 11, 13, 17, 29, 31, 44, 47, 49, 50],
+    OBX: [7, 8, 14, 16, 17, 19], SPM: [3, 5, 7, 8, 9, 11, 21, 24, 30, 31], NTE: [2, 4]
+  };
+  const MAX = {
+    "PID-3": 8, "PID-5": 8, "PID-11": 4, "PID-13": 8, "PID-14": 4, "PID-15": 1,
+    "PID-16": 1, "PID-17": 1, "PID-18": 1, "PID-29": 1, "PID-30": 1, "PID-31": 1,
+    "PID-32": 3, "PID-39": 5, "PV1-7": 2, "PV1-8": 2, "PV1-9": 2, "PV1-17": 2,
+    "ORC-21": 1, "ORC-22": 4, "ORC-23": 4, "ORC-24": 4, "ORC-28": 1, "OBR-10": 4,
+    "OBR-16": 4, "OBR-17": 4, "OBR-21": 1, "OBR-28": 999, "OBR-29": 1, "OBR-31": 20,
+    "OBR-32": 1, "OBR-44": 1, "OBR-50": 1, "OBX-5": 1, "OBX-14": 1, "OBX-15": 1,
+    "OBX-16": 5, "OBX-17": 6, "OBX-19": 1, "SPM-2": 1, "SPM-4": 1, "SPM-7": 1,
+    "SPM-8": 1, "SPM-11": 1, "SPM-17": 1, "SPM-18": 1, "SPM-24": 5, "SPM-30": 1,
+    "SPM-31": 1, "NTE-2": 1, "NTE-3": 1, "NTE-4": 1
+  };
+  const OID = /^(?:(?:0|1)\.(?:0|[1-9]|[1-3][0-9])|2\.(?:0|[1-9]\d*))(?:\.(?:0|[1-9]\d*))*$/;
+  const MD = /^[A-Za-z]{2,4}[_-].+$/;
+  const DT = /^(?:0000|\d{4}(?:\d{2}(?:\d{2}(?:\d{2}(?:\d{2}(?:\d{2}(?:\.\d{1,4})?)?)?)?)?)?)(?:[+-]\d{4})?$/;
+  const ECP = /^(\d{1,9}\.\d{9})(?:__([1-9]\d*))?$/;
+
+  function normalizeMessage(text) {
+    let value = String(text).replace(/^\ufeff/, "").trim();
+    if (value.startsWith("\x0b")) {
+      value = value.slice(1);
+      if (value.endsWith("\x1c\r")) value = value.slice(0, -2);
+      else if (value.endsWith("\x1c")) value = value.slice(0, -1);
+      else throw new Error("MLLP start framing was found without a valid end frame.");
+    } else if (value.includes("\x0b") || value.includes("\x1c")) {
+      throw new Error("Partial or embedded MLLP framing is not supported.");
+    }
+    const lines = value.replace(/\r\n/g, "\n").replace(/\r/g, "\n").split("\n").filter(line => line.trim());
+    if (!lines.length) throw new Error("No HL7 message was provided.");
+    if (["FHS", "BHS"].includes(lines[0].slice(0, 3))) throw new Error("FHS/BHS batch wrappers are not supported; provide one ORU_R01 message.");
+    if (lines.filter(line => line.startsWith("MSH")).length !== 1) throw new Error("Exactly one HL7 message is supported per validation.");
+    return lines.join("\r") + "\r";
+  }
+
+  function parse(normalized) {
+    return normalized.replace(/\r$/, "").split("\r").map((raw, index) => ({ name: raw.slice(0, 3), parts: raw.split("|"), line: index + 1 }));
+  }
+  function field(segment, number) {
+    if (segment.name === "MSH" && number === 1) return "|";
+    const index = segment.name === "MSH" ? number - 1 : number;
+    return segment.parts[index] || "";
+  }
+  function component(value, number, separator) { return (value || "").split(separator || "^")[number - 1] || ""; }
+  function validNpi(value) {
+    if (!/^\d{10}$/.test(value)) return false;
+    const digits = ("80840" + value.slice(0, 9)).split("").map(Number).reverse();
+    let total = 0;
+    digits.forEach((digit, index) => { const n = index % 2 === 0 ? digit * 2 : digit; total += Math.floor(n / 10) + n % 10; });
+    return (10 - total % 10) % 10 === Number(value[9]);
+  }
+  function parseDate(value) {
+    value = component(value, 1);
+    if (!value || value === "0000" || !DT.test(value)) return null;
+    const core = value.replace(/[+-]\d{4}$/, "").split(".")[0];
+    if (core.length < 8) return null;
+    const padded = (core + "000000").slice(0, 14);
+    const y = +padded.slice(0, 4), m = +padded.slice(4, 6), d = +padded.slice(6, 8);
+    const hh = +padded.slice(8, 10), mm = +padded.slice(10, 12), ss = +padded.slice(12, 14);
+    const date = new Date(Date.UTC(y, m - 1, d, hh, mm, ss));
+    if (date.getUTCFullYear() !== y || date.getUTCMonth() !== m - 1 || date.getUTCDate() !== d) return null;
+    return date.getTime();
+  }
+
+  function validateMessage(text) {
+    const segments = parse(normalizeMessage(text));
+    const findings = [], styles = [];
+    const all = name => segments.filter(segment => segment.name === name);
+    const one = name => segments.find(segment => segment.name === name);
+    function add(ruleId, location, lineNumber, message) {
+      const rule = RULES[ruleId];
+      findings.push({ severity: rule.severity, rule_id: ruleId, location, line_number: lineNumber == null ? null : lineNumber,
+        message, expected_behavior: rule.expected, source_section: rule.section });
+    }
+
+    const malformed = segments.find(s => !/^[A-Z0-9]{3}$/.test(s.name));
+    if (malformed) add("ER7-001", malformed.name || "message", malformed.line, "A segment identifier is malformed.");
+    const msh = one("MSH");
+    if (!msh) add("STRUCTURE-001", "MSH", null, "MSH is missing.");
+    else {
+      if (msh.parts[0] !== "MSH" || field(msh, 1) !== "|") add("LRI-13", "MSH-1", msh.line, "The field separator is not |.");
+      if (!["^~\\&", "^~\\&#"].includes(field(msh, 2))) add("LRI-14", "MSH-2", msh.line, "The encoding characters are invalid.");
+      if (field(msh, 9).split("^").slice(0, 3).join("^") !== "ORU^R01^ORU_R01") add("LRI-15", "MSH-9", msh.line, "The message identity is invalid.");
+      if (component(field(msh, 12), 1) !== "2.5.1") add("LRI-16", "MSH-12.1", msh.line, "The version is invalid.");
+    }
+    if (segments.length && segments[0].name !== "MSH") add("STRUCTURE-001", segments[0].name, segments[0].line, "MSH must be first.");
+    [["MSH", 1, 1], ["PID", 1, 1], ["PV1", 1, 1], ["ORC", 1, 999], ["OBR", 1, 999], ["OBX", 1, 999], ["SPM", 1, 999]].forEach(([name, min, max]) => {
+      const count = all(name).length;
+      if (count < min || count > max) add("STRUCTURE-001", name, null, "Segment cardinality is invalid.");
+    });
+    all("DSC").forEach(s => add("DSC-001", "DSC", s.line, "DSC is prohibited."));
+    const rank = { MSH: 0, SFT: 1, PID: 2, PD1: 3, NTE: 99, NK1: 4, PV1: 5, PV2: 6, ORC: 7, OBR: 8, TQ1: 9, TQ2: 10, OBX: 11, PRT: 12, SPM: 13 };
+    let last = -1, inOrders = false;
+    segments.forEach(s => {
+      if (s.name === "NTE") return;
+      if (s.name === "ORC") { inOrders = true; last = rank.ORC; return; }
+      const current = rank[s.name]; if (current == null || s.name === "DSC") return;
+      if (inOrders && ["OBX", "PRT", "SPM"].includes(s.name)) return;
+      if (inOrders && s.name === "OBR") last = current;
+      else if (current < last) add("STRUCTURE-001", s.name, s.line, "Segment is out of profile order.");
+      else last = current;
+    });
+    segments.forEach(s => {
+      (REQUIRED[s.name] || []).forEach(n => { if (!field(s, n)) add("FIELD-R", `${s.name}-${n}`, s.line, "A required field is empty."); });
+      (EXPECTED[s.name] || []).forEach(n => { if (!field(s, n)) add("FIELD-RE", `${s.name}-${n}`, s.line, "An expected-when-known field is empty."); });
+      Object.keys(MAX).forEach(key => {
+        const [name, n] = key.split("-");
+        if (s.name === name && field(s, +n) && field(s, +n).split("~").length > MAX[key]) add("CARDINALITY-001", key, s.line, "Field repetition maximum is exceeded.");
+      });
+    });
+    all("PID").forEach(s => { if (field(s, 30) === "Y" && !field(s, 29)) add("FIELD-R", "PID-29", s.line, "PID-29 is required by PID-30."); });
+
+    if (msh) {
+      const ids = field(msh, 21).split("~").map(rep => {
+        const id = component(rep, 3);
+        if (id && (!OID.test(id) || component(rep, 4) !== "ISO")) add("LRI-NAACCR-05", "MSH-21", msh.line, "A profile identifier is invalid.");
+        return id;
+      });
+      const o = C.profile_oids;
+      if (!ids.includes(o.naaccr)) add("LRI-NAACCR-PROFILE", "MSH-21", msh.line, "The NAACCR component OID is missing.");
+      if (ids.includes(o.conflicting_table_ng_fru)) {
+        add("LRI-11", "MSH-21", msh.line, "The conflicting table OID does not satisfy LRI-11.");
+        add("DRAFT-CONFLICT-01", "MSH-21", msh.line, "The conflicting table OID is present.");
+      } else if (!(ids.includes(o.legacy_ng_fru) || [o.common, o.ng, o.fru].every(id => ids.includes(id)))) add("LRI-11", "MSH-21", msh.line, "NG-FRU identifiers are incomplete.");
+    }
+    all("OBR").forEach((s, i) => { if (field(s, 1) !== String(i + 1)) add("LRI-34", "OBR-1", s.line, "OBR set ID is out of sequence."); });
+    ["PID", "PV1"].forEach(name => all(name).forEach(s => { if (field(s, 1) !== "1") add("SETID-001", `${name}-1`, s.line, "Set ID must be 1."); }));
+
+    function typed(uid, kind, location, line, hd) {
+      if (kind === "NPI" && !validNpi(uid)) add(hd ? "LRI-NAACCR-06" : "LRI-NAACCR-03", location, line, "The NPI is invalid.");
+      else if (kind === "MD" && !MD.test(uid)) add(hd ? "LRI-NAACCR-07" : "LRI-NAACCR-04", location, line, "The medical license prefix is invalid.");
+      else if (kind === "ISO" && !OID.test(uid)) add(hd ? "LRI-NAACCR-08" : "LRI-NAACCR-05", location, line, "The ISO OID is invalid.");
+    }
+    [["ORC", [2, 3, 4]], ["OBR", [2, 3]]].forEach(([name, fields]) => all(name).forEach(s => fields.forEach(n => { const v = field(s, n); if (v) typed(component(v, 3), component(v, 4), `${name}-${n}`, s.line, false); })));
+    [["PV1", [7, 8, 9, 17]], ["ORC", [12]], ["OBR", [16, 28]], ["OBX", [16, 25]]].forEach(([name, fields]) => all(name).forEach(s => fields.forEach(n => {
+      if (field(s, n)) field(s, n).split("~").forEach(rep => { const a = component(rep, 9); if (a) typed(component(a, 2, "&"), component(a, 3, "&"), `${name}-${n}.9`, s.line, true); });
+    })));
+    all("OBR").forEach(s => {
+      const cnn = component(field(s, 32), 1); if (!cnn) return;
+      const uid = component(cnn, 10, "&"), kind = component(cnn, 11, "&");
+      if (!uid) add("LRI-NAACCR-01", "OBR-32.1.10", s.line, "CNN.10 is empty.");
+      if (!["NPI", "MD", "ISO"].includes(kind)) add("LRI-NAACCR-02", "OBR-32.1.11", s.line, "CNN.11 is invalid.");
+      else if (uid) typed(uid, kind, "OBR-32.1.10", s.line, false);
+    });
+
+    const starts = segments.map((s, i) => s.name === "ORC" ? i : -1).filter(i => i >= 0), fillers = new Set();
+    starts.forEach((start, groupIndex) => {
+      const group = segments.slice(start, starts[groupIndex + 1] == null ? segments.length : starts[groupIndex + 1]);
+      const orc = group[0], obrs = group.filter(s => s.name === "OBR");
+      if (obrs.length !== 1) { add("STRUCTURE-001", "ORDER_OBSERVATION", orc.line, "Order group OBR cardinality is invalid."); return; }
+      const obr = obrs[0], obx = group.filter(s => s.name === "OBX"), spm = group.filter(s => s.name === "SPM");
+      if (field(obr, 25) !== "X" && !obx.length) add("STRUCTURE-001", "OBX", obr.line, "Result OBX is missing.");
+      if (!spm.length) add("STRUCTURE-001", "SPM", obr.line, "Specimen information is missing.");
+      const firstSpm = spm.length ? Math.min(...spm.map(s => s.line)) : 1e9;
+      if (obx.some(s => s.line > firstSpm)) add("STRUCTURE-001", "OBX/SPM", firstSpm, "OBX follows SPM.");
+      obx.forEach((s, i) => { if (field(s, 1) !== String(i + 1)) add("SETID-001", "OBX-1", s.line, "OBX set ID is out of sequence."); });
+      spm.forEach((s, i) => { if (field(s, 1) !== String(i + 1)) add("SETID-001", "SPM-1", s.line, "SPM set ID is out of sequence."); });
+      [["LRI-23", 2, 2], ["LRI-24", 3, 3], ["LRI-25", 12, 16]].forEach(([rule, a, b]) => { if (field(orc, a) && field(orc, a) !== field(obr, b)) add(rule, `ORC-${a}/OBR-${b}`, obr.line, "Paired ORC and OBR values differ."); });
+      if (fillers.has(field(orc, 3))) add("LRI-28", "ORC-3", orc.line, "Filler order number repeats."); fillers.add(field(orc, 3));
+      dates(obr, obx, spm); status(obr, obx); style(obr, obx); spmTerms(spm);
+    });
+
+    function dates(obr, obx, spm) {
+      let dated = [[obr, 7], [obr, 8], [obr, 22]];
+      obx.forEach(s => { dated.push([s, 14], [s, 19]); }); spm.forEach(s => { dated.push([s, 17], [s, 18]); });
+      dated.forEach(([s, n]) => { if (field(s, n)) field(s, n).split("^").forEach(v => { if (v && (!DT.test(v) || (v !== "0000" && v.replace(/[+-]\d{4}$/, "").split(".")[0].length >= 8 && parseDate(v) == null))) add("DATE-001", `${s.name}-${n}`, s.line, "Date/time is invalid."); }); });
+      const d7 = parseDate(field(obr, 7)), d8 = parseDate(field(obr, 8)), d22 = parseDate(field(obr, 22));
+      if (d7 != null && d8 != null && d8 < d7) add("LRI-33", "OBR-8", obr.line, "OBR-8 precedes OBR-7.");
+      if (d7 != null && d22 != null && d22 < d7) add("DATE-001", "OBR-22", obr.line, "Report date precedes collection.");
+      spm.forEach(s => { const start = parseDate(component(field(s, 17), 1)), parsedFinish = parseDate(component(field(s, 17), 2)), finish = parsedFinish == null ? start : parsedFinish, received = parseDate(field(s, 18));
+        if (start != null && d7 != null && start !== d7) add("DATE-001", "SPM-17.1/OBR-7", s.line, "Collection dates differ.");
+        if (start != null && received != null && received < start) add("DATE-001", "SPM-18", s.line, "Receipt precedes collection.");
+        obx.forEach(o => { const observed = parseDate(field(o, 14)); if (observed != null && start != null && finish != null && (observed < start || observed > finish)) add("DATE-001", "OBX-14", o.line, "Observation is outside the specimen range."); });
+      });
+    }
+    function status(obr, obx) {
+      const values = obx.map(s => field(s, 11)).filter(Boolean); if (!values.length) return;
+      let expected;
+      if (values.every(v => ["N", "X", "D"].includes(v))) expected = "X";
+      else if (values.some(v => ["C", "A", "B", "W"].includes(v))) expected = values.some(v => ["I", "P"].includes(v)) ? "M" : "C";
+      else if (values.includes("P")) expected = "P"; else if (values.includes("I")) expected = values.includes("F") ? "A" : "I"; else expected = "F";
+      if (field(obr, 25) !== expected) add("STATUS-001", "OBR-25", obr.line, "OBR-25 does not match OBX-11 values.");
+    }
+    function style(obr, obx) {
+      if (!obx.length) return;
+      const first = obx[0], firstCode = component(field(first, 3), 1), declaration = field(first, 5); let reportStyle;
+      if (firstCode === "60573-3") {
+        if (C.document_styles[declaration]) reportStyle = C.document_styles[declaration];
+        else if (declaration.endsWith(" Synoptic Summary") && !declaration.startsWith("CAP ")) reportStyle = "synoptic summary";
+        else if (declaration.endsWith(" Synoptic Segmented") && !declaration.startsWith("CAP ")) reportStyle = "synoptic segmented";
+        else { reportStyle = "unknown synoptic"; add("STYLE-001", "OBX-5", first.line, "Report style declaration is invalid."); }
+      } else {
+        const codes = new Set(obx.map(s => component(field(s, 3), 1)));
+        reportStyle = obx.length > 1 && [...codes].every(code => C.narrative_obx3_loincs.includes(code)) ? "structured narrative" : "unstructured narrative";
+      }
+      styles.push(reportStyle); const code = component(field(obr, 4), 1);
+      if (C.deprecated_loincs.includes(code)) add("DEPRECATED-001", "OBR-4", obr.line, "A deprecated report LOINC is used.");
+      else if (!C.obr4_loincs.includes(code)) add("OBR4-001", "OBR-4", obr.line, "The report code is not completely enumerated in the draft table.");
+      if (["synoptic summary", "synoptic segmented", "CAP eCP"].includes(reportStyle) && !C.synoptic_obr4_loincs.includes(code)) add("STYLE-001", "OBR-4", obr.line, "Synoptic style has a non-synoptic OBR-4.");
+      if (["synoptic summary", "synoptic segmented", "CAP eCP"].includes(reportStyle)) metadata(obx, reportStyle);
+      if (reportStyle === "unstructured narrative" && obx.length !== 1) add("NARRATIVE-001", "OBX", first.line, "Unstructured narrative has multiple OBXs.");
+      if (reportStyle === "structured narrative") obx.forEach(s => { if (!C.narrative_obx3_loincs.includes(component(field(s, 3), 1))) add("NARRATIVE-001", "OBX-3", s.line, "Section code is outside Table 7.14."); });
+      obx4(obx, reportStyle); if (reportStyle === "CAP eCP") ecp(obx.slice(3));
+    }
+    function metadata(obx, reportStyle) {
+      if (obx.length < 4) { add("STYLE-002", "OBX", obx[0].line, "Synoptic metadata/content is incomplete."); return; }
+      const types = reportStyle === "CAP eCP" ? ["ST", "CWE", "ST"] : ["TX", "TX", "TX"];
+      for (let i = 0; i < 3; i++) if (field(obx[i], 1) !== String(i + 1) || field(obx[i], 2) !== types[i] || component(field(obx[i], 3), 1) !== C.metadata_loincs[i] || component(field(obx[i], 3), 3) !== "LN") add("STYLE-002", `OBX[${i + 1}]`, obx[i].line, "Metadata OBX is invalid.");
+      if (reportStyle === "CAP eCP" && (!ECP.test(component(field(obx[1], 5), 1)) || component(field(obx[1], 5), 3) !== "CAPECP")) add("ECP-001", "OBX[2]-5", obx[1].line, "Template identifier is invalid.");
+    }
+    function obx4(obx, reportStyle) {
+      const seen = {};
+      obx.forEach(s => { const code = component(field(s, 3), 1), key = code + "|" + component(field(s, 3), 3); if (code) seen[key] = (seen[key] || 0) + 1; });
+      obx.forEach(s => { const code = component(field(s, 3), 1), key = code + "|" + component(field(s, 3), 3);
+        if (code && seen[key] > 1 && !field(s, 4) && !C.metadata_loincs.includes(code)) add("OBX4-001", "OBX-4", s.line, "Repeated identifier lacks OBX-4.");
+        if (field(s, 4) && reportStyle !== "CAP eCP" && !/^\d+(?:\.\d+)*$/.test(field(s, 4))) add("OBX4-001", "OBX-4", s.line, "OBX-4 dot notation is invalid.");
+      });
+    }
+    function ecp(content) {
+      const repeats = {}, priorAnswers = new Set();
+      content.forEach(s => { const q = component(field(s, 3), 1), qm = q.match(ECP);
+        if (!qm) add("ECP-001", "OBX-3.1", s.line, "Question Ckey is invalid.");
+        else if (qm[2]) { if (!repeats[qm[1]]) repeats[qm[1]] = new Set(); repeats[qm[1]].add(+qm[2]); if (component(field(s, 3), 3) !== "CAPECP.RPT" || component(field(s, 3), 7) !== qm[1] || component(field(s, 3), 9) !== "CAPECP") add("ECP-002", "OBX-3", s.line, "Repeated question metadata is invalid."); }
+        else if (component(field(s, 3), 3) !== "CAPECP") add("ECP-001", "OBX-3.3", s.line, "Question coding system is invalid.");
+        if (field(s, 2) === "CWE") { const a = component(field(s, 5), 1), am = a.match(ECP);
+          if (!am) add("ECP-001", "OBX-5.1", s.line, "Answer Ckey is invalid.");
+          else { if (am[2] && (component(field(s, 5), 3) !== "CAPECP.RPT" || component(field(s, 5), 7) !== am[1] || component(field(s, 5), 9) !== "CAPECP")) add("ECP-002", "OBX-5", s.line, "Repeated answer metadata is invalid.");
+            else if (!am[2] && component(field(s, 5), 3) !== "CAPECP") add("ECP-001", "OBX-5.3", s.line, "Answer coding system is invalid."); priorAnswers.add(a); }
+        }
+        const link = field(s, 4); if (link) { const bare = link.startsWith("+") ? link.slice(1) : link;
+          if (!ECP.test(bare)) add("ECP-003", "OBX-4", s.line, "Link syntax is invalid."); else if (!link.startsWith("+") && !priorAnswers.has(bare)) add("ECP-003", "OBX-4", s.line, "Bare LIR link has no prior answer."); }
+      });
+      Object.values(repeats).forEach(numbers => { const max = Math.max(...numbers); if (numbers.size !== max || [...Array(max)].some((_, i) => !numbers.has(i + 1))) add("ECP-002", "OBX-3.1", content.length ? content[0].line : null, "Repeat suffixes are not contiguous."); });
+    }
+    function spmTerms(spm) { spm.forEach(s => { if (field(s, 9)) field(s, 9).split("~").forEach(rep => { if (component(rep, 3) === "SCT" && !C.spm9_laterality.includes(component(rep, 1))) add("SPM9-001", "SPM-9", s.line, "Laterality is outside the enumerated set."); }); }); }
+
+    findings.sort((a, b) => (a.line_number || 0) - (b.line_number || 0) || a.rule_id.localeCompare(b.rule_id) || a.location.localeCompare(b.location));
+    const counts = { error: 0, warning: 0, information: 0 }; findings.forEach(f => counts[f.severity]++);
+    const uniqueStyles = [...new Set(styles)];
+    return { schema_version: CATALOG.schema_version, ruleset_version: CATALOG.ruleset_version, profile: CATALOG.profile,
+      detected_report_style: uniqueStyles.length === 1 ? uniqueStyles[0] : uniqueStyles.length ? "mixed: " + uniqueStyles.join(", ") : "not detected",
+      valid: counts.error === 0, counts, findings, coverage_notices: CATALOG.coverage_notices.slice() };
+  }
+
+  return { normalizeMessage, validateMessage };
+});
+</script>
+  <script>(function () {
+  "use strict";
+
+  function byId(id) { return document.getElementById(id); }
+  function empty(element) { while (element.firstChild) element.removeChild(element.firstChild); }
+
+  var message = byId("message");
+  var fileInput = byId("file");
+  var inputError = byId("input-error");
+  var startupError = byId("startup-error");
+  var sample = byId("sample");
+  var currentReport = null;
+  var samples = window.__LRI_SAMPLES__ || {};
+  var sampleLabels = {
+    "unstructured-narrative": "Unstructured narrative",
+    "structured-narrative": "Structured narrative",
+    "synoptic-summary": "Synoptic summary",
+    "synoptic-segmented": "Synoptic segmented",
+    "cap-ecp": "CAP eCP"
+  };
+
+  function failInput(text) { inputError.textContent = text; inputError.hidden = false; }
+  function clearInputError() { inputError.textContent = ""; inputError.hidden = true; }
+  function resetReport() {
+    message.value = "";
+    fileInput.value = "";
+    sample.value = "";
+    clearInputError();
+    currentReport = null;
+    byId("report").hidden = true;
+    byId("no-report").hidden = false;
+  }
+
+  // Register Clear before checking the validator so it remains usable if startup fails.
+  byId("clear").addEventListener("click", function () {
+    resetReport();
+    message.focus();
+  });
+
+  function focusLine(line) {
+    if (!line) return;
+    var lines = message.value.split(/\r\n|\r|\n/);
+    var start = 0;
+    var index;
+    for (index = 0; index < line - 1 && index < lines.length; index += 1) start += lines[index].length + 1;
+    var end = start + (lines[line - 1] || "").length;
+    message.focus();
+    message.setSelectionRange(start, end);
+    message.scrollTop = Math.max(0, (line - 3) * 19);
+  }
+
+  function renderFindings() {
+    var enabled = {};
+    Array.prototype.forEach.call(document.querySelectorAll("[data-severity]:checked"), function (input) {
+      enabled[input.dataset.severity] = true;
+    });
+    var list = byId("findings");
+    empty(list);
+    var visible = currentReport.findings.filter(function (finding) { return enabled[finding.severity]; });
+    if (!visible.length) {
+      var none = document.createElement("li");
+      none.className = "empty";
+      none.textContent = currentReport.findings.length ? "No findings match the active severity filters." : "No findings.";
+      list.appendChild(none);
+      return;
+    }
+    visible.forEach(function (finding) {
+      var item = document.createElement("li");
+      var button = document.createElement("button");
+      var head = document.createElement("div");
+      var severity = document.createElement("span");
+      var rule = document.createElement("span");
+      var detail = document.createElement("p");
+      var expected = document.createElement("small");
+      item.className = "finding";
+      button.type = "button";
+      head.className = "finding-head";
+      severity.className = "severity " + finding.severity;
+      severity.textContent = finding.severity;
+      rule.className = "rule";
+      rule.textContent = finding.rule_id + " · " + finding.location + (finding.line_number ? " · line " + finding.line_number : "");
+      detail.textContent = finding.message;
+      expected.textContent = "Expected: " + finding.expected_behavior + " Source: " + finding.source_section;
+      head.appendChild(severity);
+      head.appendChild(rule);
+      button.appendChild(head);
+      button.appendChild(detail);
+      button.appendChild(expected);
+      button.addEventListener("click", function () { focusLine(finding.line_number); });
+      item.appendChild(button);
+      list.appendChild(item);
+    });
+  }
+
+  function render() {
+    byId("no-report").hidden = true;
+    byId("report").hidden = false;
+    var status = byId("status");
+    status.className = "status " + (currentReport.valid ? "pass" : "fail");
+    byId("result-label").textContent = currentReport.valid ? "PASS: no validation errors" : "FAIL: validation errors found";
+    byId("style-label").textContent = "Detected style: " + currentReport.detected_report_style;
+    byId("ruleset-label").textContent = currentReport.ruleset_version;
+    var counts = byId("counts");
+    empty(counts);
+    [["error", "Errors"], ["warning", "Warnings"], ["information", "Information"]].forEach(function (entry) {
+      var count = document.createElement("span");
+      count.className = "count " + entry[0];
+      count.textContent = entry[1] + ": " + currentReport.counts[entry[0]];
+      counts.appendChild(count);
+    });
+    renderFindings();
+    var coverage = byId("coverage");
+    empty(coverage);
+    currentReport.coverage_notices.forEach(function (text) {
+      var item = document.createElement("li");
+      item.textContent = text;
+      coverage.appendChild(item);
+    });
+  }
+
+  Object.keys(samples).sort().forEach(function (key) {
+    var option = document.createElement("option");
+    option.value = key;
+    option.textContent = sampleLabels[key] || key;
+    sample.appendChild(option);
+  });
+
+  byId("validate").addEventListener("click", function () {
+    clearInputError();
+    if (!window.LriValidator || typeof window.LriValidator.validateMessage !== "function") {
+      startupError.textContent = "The validator could not start in this browser. Open the HTML file in a current version of Safari, Chrome, Firefox, or Edge.";
+      startupError.hidden = false;
+      return;
+    }
+    try {
+      currentReport = window.LriValidator.validateMessage(message.value);
+      render();
+    } catch (error) {
+      failInput(error && error.message ? error.message : String(error));
+    }
+  });
+  byId("load-sample").addEventListener("click", function () {
+    if (sample.value && samples[sample.value]) {
+      message.value = samples[sample.value];
+      clearInputError();
+      message.focus();
+    }
+  });
+  fileInput.addEventListener("change", function (event) {
+    clearInputError();
+    var file = event.target.files && event.target.files[0];
+    if (!file) return;
+    if (!/\.(hl7|er7|txt)$/i.test(file.name)) {
+      failInput("Choose a .hl7, .er7, or .txt file.");
+      event.target.value = "";
+      return;
+    }
+    var reader = new FileReader();
+    reader.onload = function () { message.value = String(reader.result || ""); };
+    reader.onerror = function () { failInput("The selected file could not be read as text."); };
+    reader.readAsText(file);
+  });
+  Array.prototype.forEach.call(document.querySelectorAll("[data-severity]"), function (input) {
+    input.addEventListener("change", function () { if (currentReport) renderFindings(); });
+  });
+  byId("download").addEventListener("click", function () {
+    if (!currentReport) return;
+    var blob = new Blob([JSON.stringify(currentReport, null, 2) + "\n"], { type: "application/json" });
+    var link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = "naaccr-lri-validation-report.json";
+    link.click();
+    window.setTimeout(function () { URL.revokeObjectURL(link.href); }, 0);
+  });
+  byId("print").addEventListener("click", function () { window.print(); });
+
+  if (window.LriValidator && typeof window.LriValidator.validateMessage === "function") {
+    startupError.hidden = true;
+    document.documentElement.setAttribute("data-validator-ready", "true");
+  } else {
+    startupError.textContent = "Startup error: the embedded validator engine was not available.";
+    startupError.hidden = false;
+    document.documentElement.setAttribute("data-validator-ready", "false");
+  }
+}());
+</script>
+</body>
+</html>

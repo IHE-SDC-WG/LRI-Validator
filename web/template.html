@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>NAACCR LRI offline validator</title>
+  <style>
+    :root { color-scheme: light; --ink:#17202a; --muted:#5c6773; --line:#ccd4dc; --paper:#fff; --wash:#f4f7f9; --accent:#155f75; --accent2:#0d4252; --error:#a62b24; --warning:#805800; --info:#285b8f; --ok:#17633b; }
+    * { box-sizing:border-box; }
+    body { margin:0; font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; color:var(--ink); background:var(--wash); }
+    header { background:var(--accent2); color:#fff; padding:28px max(24px,calc((100vw - 1180px)/2)); }
+    header p { margin:7px 0 0; max-width:760px; color:#d9edf2; }
+    h1 { margin:0; font-size:clamp(24px,3vw,36px); letter-spacing:-.02em; }
+    h2 { margin:0 0 14px; font-size:20px; }
+    main { max-width:1180px; margin:0 auto; padding:24px; }
+    .privacy { margin:0 0 20px; padding:13px 16px; border-left:4px solid var(--accent); background:#eaf4f6; }
+    .grid { display:grid; grid-template-columns:minmax(0,1.08fr) minmax(360px,.92fr); gap:20px; align-items:start; }
+    .card { background:var(--paper); border:1px solid var(--line); border-radius:10px; box-shadow:0 2px 8px rgba(23,32,42,.06); padding:20px; }
+    label { font-weight:650; }
+    textarea { width:100%; min-height:410px; margin-top:8px; resize:vertical; border:1px solid #9ba8b4; border-radius:6px; padding:12px; font:13px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace; color:#15212b; background:#fbfcfd; tab-size:2; }
+    textarea:focus,button:focus,select:focus,input:focus { outline:3px solid #8fc7d5; outline-offset:2px; }
+    .row { display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-top:12px; }
+    button,.button { border:1px solid var(--accent); border-radius:6px; background:var(--accent); color:#fff; padding:9px 14px; font:inherit; font-weight:650; cursor:pointer; }
+    button.secondary,.button.secondary { color:var(--accent2); background:#fff; }
+    button:disabled { opacity:.55; cursor:not-allowed; }
+    input[type=file] { max-width:100%; }
+    select { padding:8px; border:1px solid #9ba8b4; border-radius:6px; background:#fff; font:inherit; }
+    .status { display:grid; grid-template-columns:1fr auto; gap:12px; align-items:start; border:1px solid var(--line); border-radius:8px; padding:14px; background:var(--wash); }
+    .status strong { font-size:18px; }
+    .status.pass { border-left:6px solid var(--ok); }
+    .status.fail { border-left:6px solid var(--error); }
+    .counts { display:flex; flex-wrap:wrap; gap:8px; margin:14px 0; }
+    .count { border:1px solid currentColor; border-radius:999px; padding:3px 9px; font-weight:650; }
+    .error { color:var(--error); } .warning { color:var(--warning); } .information { color:var(--info); }
+    fieldset { border:0; padding:0; margin:13px 0; }
+    legend { font-weight:650; margin-bottom:5px; }
+    fieldset label { font-weight:500; margin-right:13px; white-space:nowrap; }
+    .findings { list-style:none; padding:0; margin:14px 0 0; max-height:550px; overflow:auto; }
+    .finding { margin:0 0 9px; }
+    .finding button { width:100%; text-align:left; color:var(--ink); background:#fff; border-color:var(--line); padding:11px; font-weight:400; }
+    .finding button:hover { border-color:var(--accent); background:#f7fbfc; }
+    .finding-head { display:flex; gap:8px; justify-content:space-between; margin-bottom:5px; }
+    .severity { font-weight:750; text-transform:uppercase; font-size:12px; letter-spacing:.04em; }
+    .rule { font:12px ui-monospace,SFMono-Regular,Menlo,monospace; color:var(--muted); }
+    .finding p { margin:4px 0; }
+    .finding small { color:var(--muted); }
+    .empty { color:var(--muted); padding:24px 0; text-align:center; }
+    details { margin-top:15px; }
+    details li { margin:6px 0; }
+    .error-box { border-left:5px solid var(--error); background:#fff0ef; padding:12px; margin:12px 0 0; }
+    footer { max-width:1180px; margin:0 auto; padding:0 24px 28px; color:var(--muted); font-size:13px; }
+    [hidden] { display:none !important; }
+    @media (max-width:850px) { .grid { grid-template-columns:1fr; } textarea { min-height:300px; } }
+    @media print { body { background:#fff; } header { color:#000; background:#fff; padding:0 0 18px; } header p { color:#333; } main { padding:0; max-width:none; } .privacy,.editor,.controls,footer { display:none !important; } .grid { display:block; } .card { border:0; box-shadow:none; padding:0; } .findings { max-height:none; overflow:visible; } .finding button { break-inside:avoid; } }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>NAACCR LRI offline validator</h1>
+    <p>Context-free checks for one HL7 v2.5.1 ORU_R01 cancer-pathology message, pinned to the May 2026 LRI ballot draft.</p>
+  </header>
+  <main>
+    <p class="privacy"><strong>Privacy:</strong> Your message stays in this tab. This file makes no network requests and uses no browser storage. Downloaded and printed reports omit the raw message and message values.</p>
+    <div class="grid">
+      <form id="input-form" class="card editor" aria-labelledby="input-heading">
+        <h2 id="input-heading">Message input</h2>
+        <label for="message">Paste one ER7 message</label>
+        <textarea id="message" spellcheck="false" aria-describedby="input-help" placeholder="MSH|^~\&amp;|..."></textarea>
+        <p id="input-help">CR, LF, and CRLF endings are accepted. Complete MLLP framing is removed. Batches and multiple messages are rejected.</p>
+        <div class="row">
+          <label for="file">Choose a message file</label>
+          <input id="file" type="file" accept=".hl7,.er7,.txt,text/plain">
+        </div>
+        <div class="row">
+          <label for="sample">Synthetic sample</label>
+          <select id="sample"><option value="">Select a report style</option></select>
+          <button id="load-sample" class="secondary" type="button">Load sample</button>
+        </div>
+        <div class="row">
+          <button id="validate" type="button">Validate message</button>
+          <button id="clear" class="secondary" type="reset">Clear</button>
+        </div>
+        <div id="startup-error" class="error-box" role="alert">The interactive controls did not start. Open this HTML file in a current version of Safari, Chrome, Firefox, or Edge.</div>
+        <noscript><div class="error-box" role="alert">JavaScript is disabled. Enable it to validate messages in this offline file.</div></noscript>
+        <div id="input-error" class="error-box" role="alert" hidden></div>
+      </form>
+      <section class="card" aria-labelledby="results-heading">
+        <h2 id="results-heading">Validation report</h2>
+        <div id="no-report" class="empty">Enter a message and validate it to see categorized findings.</div>
+        <div id="report" hidden>
+          <div id="status" class="status" role="status" aria-live="polite">
+            <div><strong id="result-label"></strong><div id="style-label"></div></div>
+            <div id="ruleset-label" class="rule"></div>
+          </div>
+          <div id="counts" class="counts"></div>
+          <div class="controls">
+            <fieldset><legend>Show severities</legend>
+              <label><input type="checkbox" data-severity="error" checked> Errors</label>
+              <label><input type="checkbox" data-severity="warning" checked> Warnings</label>
+              <label><input type="checkbox" data-severity="information" checked> Information</label>
+            </fieldset>
+            <div class="row">
+              <button id="download" class="secondary" type="button">Download JSON</button>
+              <button id="print" class="secondary" type="button">Print report</button>
+            </div>
+          </div>
+          <ol id="findings" class="findings"></ol>
+          <details><summary>Coverage notices</summary><ul id="coverage"></ul></details>
+        </div>
+      </section>
+    </div>
+  </main>
+  <footer>Draft-based implementation aid. Not an HL7 or NIST certification service.</footer>
+  <script>
+    window.onerror = function (message, source, line) {
+      var box = document.getElementById("startup-error");
+      if (box) {
+        box.textContent = "Startup error: " + String(message) + (line ? " (line " + line + ")." : ".");
+        box.hidden = false;
+      }
+      return false;
+    };
+  </script>
+  <script>/*__DATA__*/</script>
+  <script>/*__VALIDATOR__*/</script>
+  <script>/*__APP__*/</script>
+</body>
+</html>
