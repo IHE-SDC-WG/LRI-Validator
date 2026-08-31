@@ -21,7 +21,10 @@
     "synoptic-summary": "Synoptic summary",
     "synoptic-segmented": "Synoptic segmented",
     "cap-ecp": "CAP eCP",
-    "breast-synoptic-summary": "Breast synoptic summary"
+    "breast-synoptic-summary": "Breast synoptic summary",
+    "invalid-ecp-link": "Invalid: CAP eCP response link",
+    "invalid-message-type": "Invalid: wrong message type",
+    "invalid-missing-specimen": "Invalid: missing specimen"
   };
 
   function failInput(text) { inputError.textContent = text; inputError.hidden = false; }
@@ -411,7 +414,12 @@
     }
   }
 
-  Object.keys(samples).sort().forEach(function (key) {
+  Object.keys(samples).sort(function (left, right) {
+    var leftInvalid = left.indexOf("invalid-") === 0;
+    var rightInvalid = right.indexOf("invalid-") === 0;
+    if (leftInvalid !== rightInvalid) return leftInvalid ? 1 : -1;
+    return left.localeCompare(right);
+  }).forEach(function (key) {
     var option = document.createElement("option");
     option.value = key;
     option.textContent = sampleLabels[key] || key;

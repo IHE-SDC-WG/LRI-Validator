@@ -14,7 +14,7 @@ This work was conducted under the following Centers for Disease Control and Prev
 
 ## Browser use
 
-Open `dist/naaccr-lri-validator.html` directly from Finder. Paste a message or choose one `.hl7`, `.er7`, or `.txt` file, then select **Validate message**. The syntax check has no remote dependencies, makes no network requests, and does not use cookies or browser storage.
+Open `dist/naaccr-lri-validator.html` directly from Finder. Paste a message, choose one `.hl7`, `.er7`, or `.txt` file, or load a synthetic example, then select **Validate message**. The example picker includes passing report styles and clearly labelled failing messages. The syntax check has no remote dependencies, makes no network requests, and does not use cookies or browser storage.
 
 Some browser launch paths block scripts in a directly opened local HTML file. If the page reports that its controls did not start, serve the same file on the loopback interface from the repository root:
 
@@ -104,7 +104,7 @@ The build is deterministic. The tracked HTML contains exactly one `fetch(` call 
 Current artifact SHA-256:
 
 ```text
-ccabe3d441914a7ca6dd3104742cb0f88704c6fd926c88c10a084eab59a64326  dist/naaccr-lri-validator.html
+b5797256fbbce9b21763cf47569fe09f9f544987f7260e474e09ac08e2c82888  dist/naaccr-lri-validator.html
 ```
 
 ## Privacy

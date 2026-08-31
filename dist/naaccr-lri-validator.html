@@ -91,7 +91,7 @@
         </div>
         <div class="row">
           <label for="sample">Synthetic sample</label>
-          <select id="sample"><option value="">Select a report style</option></select>
+          <select id="sample"><option value="">Select an example</option></select>
           <button id="load-sample" class="secondary" type="button">Load sample</button>
         </div>
         <div class="row">
@@ -869,6 +869,38 @@ window.__LRI_SAMPLES__["unstructured-narrative"] = [
   "OBR|1||FILL0001^SYNLAB^2.16.840.1.113883.19.77^ISO|11529-5^Surgical pathology study^LN|||202608270900-0400|||||||||PRV001^Lin^Morgan^^^^^^LOCAL&2.16.840.1.113883.19.77&ISO|||||4165550101|202608271200-0400|||F|||||||PRV001&Lin&Morgan&&&&&&&2.16.840.1.113883.19.77&ISO",
   "OBX|1|TX|22637-3^Path report.final diagnosis^LN||Bone marrow core biopsy shows plasma cell myeloma (9732/3).||||||F|||202608270900-0400|||PRV001^Lin^Morgan^^^^^^LOCAL&2.16.840.1.113883.19.77&ISO|||202608271130-0400",
   "SPM|1|^SPEC0001&SYNLAB&2.16.840.1.113883.19.77&ISO||TISS^Bone marrow core biopsy specimen^HL70487||||C42.1^Bone marrow^ICD-O-3|||||||||202608270900-0400|202608271000-0400"
+].join("\n") + "\n";
+window.__LRI_SAMPLES__["invalid-ecp-link"] = [
+  "MSH|^~\\&|SYNAPP^2.16.840.1.113883.19.77^ISO|SYNLAB^2.16.840.1.113883.19.77^ISO|REGAPP^2.16.840.1.113883.19.77^ISO|REGISTRY^2.16.840.1.113883.19.77^ISO|202608281000-0400||ORU^R01^ORU_R01|SYN0001|P|2.5.1|||NE|AL|CAN||eng^English^ISO639||LRI_NAACCR_Component^^2.16.840.1.113883.9.195.3.31^ISO~LRI_Common_Component_V3^^2.16.840.1.113883.9.195.3.22^ISO~LRI_NG_Component_R1^^2.16.840.1.113883.9.13^ISO~LAB_FRU_Component^^2.16.840.1.113883.9.83^ISO",
+  "PID|1||PAT0001^^^LOCAL&2.16.840.1.113883.19.77&ISO^MR||Lin^Case^^^^^^L||19800101|F",
+  "PV1|1|O",
+  "ORC|RE||FILL0001^SYNLAB^2.16.840.1.113883.19.77^ISO|||||||||PRV001^Lin^Morgan^^^^^^LOCAL&2.16.840.1.113883.19.77&ISO|||||||||Synthetic Pathology Laboratory^L^^^^LOCAL&2.16.840.1.113883.19.77&ISO",
+  "OBR|1||FILL0001^SYNLAB^2.16.840.1.113883.19.77^ISO|60568-3^Synoptic report^LN|||202608270900-0400|||||||||PRV001^Lin^Morgan^^^^^^LOCAL&2.16.840.1.113883.19.77&ISO|||||4165550101|202608271200-0400|||F|||||||PRV001&Lin&Morgan&&&&&&&2.16.840.1.113883.19.77&ISO",
+  "OBX|1|ST|60573-3^Report template source^LN||CAP eCP||||||F",
+  "OBX|2|CWE|60572-5^Report template ID^LN||100.100004300^Breast Invasive Resection^CAPECP||||||F",
+  "OBX|3|ST|60574-1^Report template version ID^LN||1.000.000.REL||||||F",
+  "OBX|4|CWE|200.100004300^Primary Site^CAPECP|+bad|201.100004300^Upper-outer quadrant^CAPECP^C504^Upper-outer quadrant of breast^ICD-O-3||||||F",
+  "OBX|5|CWE|202.100004300^Histologic Type^CAPECP||203.100004300^Invasive carcinoma^CAPECP^8500/3^Invasive carcinoma^ICD-O-3||||||F",
+  "OBX|6|CWE|204.100004300^Laterality^CAPECP||205.100004300^Left^CAPECP^7771000^Left^SCT||||||F",
+  "OBX|7|CWE|206.100004300^Histologic Grade^CAPECP||207.100004300^Grade 2^CAPECP^2^Grade 2^NAACCR||||||F",
+  "SPM|1|^SPEC0001&SYNLAB&2.16.840.1.113883.19.77&ISO||TISS^Breast tissue specimen^HL70487||||C50.4^Upper-outer quadrant of breast^ICD-O-3|7771000^Left^SCT||||||||202608270900-0400|202608271000-0400"
+].join("\n") + "\n";
+window.__LRI_SAMPLES__["invalid-message-type"] = [
+  "MSH|^~\\&|SYNAPP^2.16.840.1.113883.19.77^ISO|SYNLAB^2.16.840.1.113883.19.77^ISO|REGAPP^2.16.840.1.113883.19.77^ISO|REGISTRY^2.16.840.1.113883.19.77^ISO|202608281000-0400||ORU^R03^ORU_R01|SYN0001|P|2.5.1|||NE|AL|CAN||eng^English^ISO639||LRI_NAACCR_Component^^2.16.840.1.113883.9.195.3.31^ISO~LRI_Common_Component_V3^^2.16.840.1.113883.9.195.3.22^ISO~LRI_NG_Component_R1^^2.16.840.1.113883.9.13^ISO~LAB_FRU_Component^^2.16.840.1.113883.9.83^ISO",
+  "PID|1||PAT0001^^^LOCAL&2.16.840.1.113883.19.77&ISO^MR||Lin^Case^^^^^^L||19800101|F",
+  "PV1|1|O",
+  "ORC|RE||FILL0001^SYNLAB^2.16.840.1.113883.19.77^ISO|||||||||PRV001^Lin^Morgan^^^^^^LOCAL&2.16.840.1.113883.19.77&ISO|||||||||Synthetic Pathology Laboratory^L^^^^LOCAL&2.16.840.1.113883.19.77&ISO",
+  "OBR|1||FILL0001^SYNLAB^2.16.840.1.113883.19.77^ISO|11529-5^Surgical pathology study^LN|||202608270900-0400|||||||||PRV001^Lin^Morgan^^^^^^LOCAL&2.16.840.1.113883.19.77&ISO|||||4165550101|202608271200-0400|||F|||||||PRV001&Lin&Morgan&&&&&&&2.16.840.1.113883.19.77&ISO",
+  "OBX|1|TX|22637-3^Path report.final diagnosis^LN||Bone marrow core biopsy shows plasma cell myeloma (9732/3).||||||F|||202608270900-0400|||PRV001^Lin^Morgan^^^^^^LOCAL&2.16.840.1.113883.19.77&ISO|||202608271130-0400",
+  "SPM|1|^SPEC0001&SYNLAB&2.16.840.1.113883.19.77&ISO||TISS^Bone marrow core biopsy specimen^HL70487||||C42.1^Bone marrow^ICD-O-3|||||||||202608270900-0400|202608271000-0400"
+].join("\n") + "\n";
+window.__LRI_SAMPLES__["invalid-missing-specimen"] = [
+  "MSH|^~\\&|SYNAPP^2.16.840.1.113883.19.77^ISO|SYNLAB^2.16.840.1.113883.19.77^ISO|REGAPP^2.16.840.1.113883.19.77^ISO|REGISTRY^2.16.840.1.113883.19.77^ISO|202608281000-0400||ORU^R01^ORU_R01|SYN0001|P|2.5.1|||NE|AL|CAN||eng^English^ISO639||LRI_NAACCR_Component^^2.16.840.1.113883.9.195.3.31^ISO~LRI_Common_Component_V3^^2.16.840.1.113883.9.195.3.22^ISO~LRI_NG_Component_R1^^2.16.840.1.113883.9.13^ISO~LAB_FRU_Component^^2.16.840.1.113883.9.83^ISO",
+  "PID|1||PAT0001^^^LOCAL&2.16.840.1.113883.19.77&ISO^MR||Lin^Case^^^^^^L||19800101|F",
+  "PV1|1|O",
+  "ORC|RE||FILL0001^SYNLAB^2.16.840.1.113883.19.77^ISO|||||||||PRV001^Lin^Morgan^^^^^^LOCAL&2.16.840.1.113883.19.77&ISO|||||||||Synthetic Pathology Laboratory^L^^^^LOCAL&2.16.840.1.113883.19.77&ISO",
+  "OBR|1||FILL0001^SYNLAB^2.16.840.1.113883.19.77^ISO|11529-5^Surgical pathology study^LN|||202608270900-0400|||||||||PRV001^Lin^Morgan^^^^^^LOCAL&2.16.840.1.113883.19.77&ISO|||||4165550101|202608271200-0400|||F|||||||PRV001&Lin&Morgan&&&&&&&2.16.840.1.113883.19.77&ISO",
+  "OBX|1|TX|22637-3^Path report.final diagnosis^LN||Bone marrow core biopsy shows plasma cell myeloma (9732/3).||||||F|||202608270900-0400|||PRV001^Lin^Morgan^^^^^^LOCAL&2.16.840.1.113883.19.77&ISO|||202608271130-0400"
 ].join("\n") + "\n";</script>
   <script>(function (root, factory) {
   const api = factory(root.__LRI_CATALOG__ || {});
@@ -1786,7 +1818,10 @@ window.__LRI_SAMPLES__["unstructured-narrative"] = [
     "synoptic-summary": "Synoptic summary",
     "synoptic-segmented": "Synoptic segmented",
     "cap-ecp": "CAP eCP",
-    "breast-synoptic-summary": "Breast synoptic summary"
+    "breast-synoptic-summary": "Breast synoptic summary",
+    "invalid-ecp-link": "Invalid: CAP eCP response link",
+    "invalid-message-type": "Invalid: wrong message type",
+    "invalid-missing-specimen": "Invalid: missing specimen"
   };
 
   function failInput(text) { inputError.textContent = text; inputError.hidden = false; }
@@ -2176,7 +2211,12 @@ window.__LRI_SAMPLES__["unstructured-narrative"] = [
     }
   }
 
-  Object.keys(samples).sort().forEach(function (key) {
+  Object.keys(samples).sort(function (left, right) {
+    var leftInvalid = left.indexOf("invalid-") === 0;
+    var rightInvalid = right.indexOf("invalid-") === 0;
+    if (leftInvalid !== rightInvalid) return leftInvalid ? 1 : -1;
+    return left.localeCompare(right);
+  }).forEach(function (key) {
     var option = document.createElement("option");
     option.value = key;
     option.textContent = sampleLabels[key] || key;

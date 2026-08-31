@@ -33,7 +33,11 @@ def build() -> Path:
     content = (ROOT / "web" / "content.js").read_text(encoding="utf-8")
     app = (ROOT / "web" / "app.js").read_text(encoding="utf-8")
     catalog = json.loads((ROOT / "src" / "lri_validator" / "catalog.json").read_text(encoding="utf-8"))
-    samples = {path.stem: path.read_text(encoding="utf-8") for path in sorted((ROOT / "tests" / "fixtures" / "valid").glob("*.hl7"))}
+    sample_paths = [
+        *sorted((ROOT / "tests" / "fixtures" / "valid").glob("*.hl7")),
+        *sorted((ROOT / "tests" / "fixtures" / "negative").glob("*.hl7")),
+    ]
+    samples = {path.stem: path.read_text(encoding="utf-8") for path in sample_paths}
     output = (template.replace("/*__DATA__*/", data_script(catalog, samples))
         .replace("/*__VALIDATOR__*/", validator)
         .replace("/*__CONTENT__*/", content)

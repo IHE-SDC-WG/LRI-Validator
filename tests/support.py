@@ -6,6 +6,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 VALID = ROOT / "tests" / "fixtures" / "valid"
+NEGATIVE = ROOT / "tests" / "fixtures" / "negative"
 CONTENT_FIXTURES = ROOT / "tests" / "fixtures" / "content"
 SEER_FIXTURES = ROOT / "tests" / "fixtures" / "seer"
 CASES = json.loads((ROOT / "tests" / "fixtures" / "negative" / "cases.json").read_text())

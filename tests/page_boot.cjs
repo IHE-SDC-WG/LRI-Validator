@@ -53,6 +53,19 @@ const severities = ["error", "warning", "information"].map(value => {
   element.dataset.severity = value;
   return element;
 });
+const validSamples = {
+  "breast-synoptic-summary": "tests/fixtures/valid/breast-synoptic-summary.hl7",
+  "cap-ecp": "tests/fixtures/valid/cap-ecp.hl7",
+  "structured-narrative": "tests/fixtures/valid/structured-narrative.hl7",
+  "synoptic-segmented": "tests/fixtures/valid/synoptic-segmented.hl7",
+  "synoptic-summary": "tests/fixtures/valid/synoptic-summary.hl7",
+  "unstructured-narrative": "tests/fixtures/valid/unstructured-narrative.hl7"
+};
+const invalidSamples = {
+  "invalid-ecp-link": { path: "tests/fixtures/negative/invalid-ecp-link.hl7", ruleId: "ECP-003" },
+  "invalid-message-type": { path: "tests/fixtures/negative/invalid-message-type.hl7", ruleId: "LRI-15" },
+  "invalid-missing-specimen": { path: "tests/fixtures/negative/invalid-missing-specimen.hl7", ruleId: "STRUCTURE-001" }
+};
 const document = {
   documentElement: new Element("html"),
   getElementById(id) { return elements[id]; },
@@ -105,6 +118,10 @@ async function settle() {
   for (let index = 0; index < 10; index += 1) await Promise.resolve();
 }
 
+function descendantText(element) {
+  return [element.textContent, ...element.children.map(descendantText)].join(" ");
+}
+
 async function main() {
   const html = fs.readFileSync("dist/naaccr-lri-validator.html", "utf8");
   const scripts = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].map(match => match[1]);
@@ -116,17 +133,28 @@ async function main() {
   assert.equal(elements["startup-error"].hidden, true);
   assert.equal(context.__LRI_CATALOG__.schema_version, "1.0.0");
   assert.deepEqual(Object.keys(context.__LRI_SAMPLES__).sort(), [
-    "breast-synoptic-summary", "cap-ecp", "structured-narrative", "synoptic-segmented", "synoptic-summary", "unstructured-narrative"
+    "breast-synoptic-summary", "cap-ecp", "invalid-ecp-link", "invalid-message-type", "invalid-missing-specimen",
+    "structured-narrative", "synoptic-segmented", "synoptic-summary", "unstructured-narrative"
   ]);
   assert.deepEqual(
     JSON.parse(JSON.stringify(context.__LRI_CATALOG__)),
     JSON.parse(fs.readFileSync("src/lri_validator/catalog.json", "utf8"))
   );
-  for (const name of Object.keys(context.__LRI_SAMPLES__)) {
-    assert.equal(context.__LRI_SAMPLES__[name], fs.readFileSync(`tests/fixtures/valid/${name}.hl7`, "utf8"));
+  for (const [name, path] of Object.entries(validSamples)) {
+    assert.equal(context.__LRI_SAMPLES__[name], fs.readFileSync(path, "utf8"));
   }
+  for (const [name, example] of Object.entries(invalidSamples)) {
+    assert.equal(context.__LRI_SAMPLES__[name], fs.readFileSync(example.path, "utf8"));
+  }
+  assert.deepEqual(elements.sample.children.map(option => option.value), [
+    "breast-synoptic-summary", "cap-ecp", "structured-narrative", "synoptic-segmented", "synoptic-summary",
+    "unstructured-narrative", "invalid-ecp-link", "invalid-message-type", "invalid-missing-specimen"
+  ]);
+  assert.deepEqual(elements.sample.children.slice(-3).map(option => option.textContent), [
+    "Invalid: CAP eCP response link", "Invalid: wrong message type", "Invalid: missing specimen"
+  ]);
 
-  for (const name of Object.keys(context.__LRI_SAMPLES__)) {
+  for (const name of Object.keys(validSamples)) {
     elements.message.value = context.__LRI_SAMPLES__[name];
     await elements.validate.click();
     assert.equal(elements.report.hidden, false, `${name} should display a report`);
@@ -135,6 +163,17 @@ async function main() {
     const disclosure = elements["content-disclosure"].children.map(item => item.textContent).join(" ");
     assert.match(disclosure, /Primary site \(ICD-O-3\): C\d{3}/);
     assert.match(disclosure, /Histology \(ICD-O-3\): \d{4}/);
+  }
+
+  for (const [name, example] of Object.entries(invalidSamples)) {
+    elements.sample.value = name;
+    await elements["load-sample"].click();
+    assert.equal(elements.message.value, context.__LRI_SAMPLES__[name]);
+    await elements.validate.click();
+    assert.equal(elements.report.hidden, false, `${name} should display a report`);
+    assert.match(elements["result-label"].textContent, /^FAIL:/);
+    assert.equal(elements["content-panel"].hidden, true, `${name} should not expose the online check`);
+    assert.ok(descendantText(elements.findings).includes(example.ruleId), `${name} should display ${example.ruleId}`);
   }
 
   elements.message.value = context.__LRI_SAMPLES__["breast-synoptic-summary"];

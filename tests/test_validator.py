@@ -5,7 +5,7 @@ import json
 import pytest
 
 from lri_validator import UnsupportedInputError, validate_message
-from tests.support import CASES, VALID, apply_case
+from tests.support import CASES, NEGATIVE, VALID, apply_case
 
 
 EXPECTED_STYLES = {
@@ -17,6 +17,12 @@ EXPECTED_STYLES = {
     "cap-ecp.hl7": "CAP eCP",
 }
 
+INVALID_EXAMPLES = {
+    "invalid-ecp-link.hl7": "ECP-003",
+    "invalid-message-type.hl7": "LRI-15",
+    "invalid-missing-specimen.hl7": "STRUCTURE-001",
+}
+
 
 @pytest.mark.parametrize("name,style", EXPECTED_STYLES.items())
 def test_valid_synthetic_styles(name: str, style: str) -> None:
@@ -24,6 +30,13 @@ def test_valid_synthetic_styles(name: str, style: str) -> None:
     assert report.valid
     assert report.detected_report_style == style
     assert report.counts["error"] == 0
+
+
+@pytest.mark.parametrize("name,rule_id", INVALID_EXAMPLES.items())
+def test_invalid_synthetic_examples(name: str, rule_id: str) -> None:
+    report = validate_message((NEGATIVE / name).read_text())
+    assert not report.valid
+    assert rule_id in {finding.rule_id for finding in report.findings}
 
 
 @pytest.mark.parametrize("case", CASES, ids=[case["name"] for case in CASES])
