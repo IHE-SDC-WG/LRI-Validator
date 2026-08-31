@@ -5,15 +5,22 @@ import json
 import pytest
 
 from lri_validator import UnsupportedInputError, validate_message
-from tests.support import CASES, VALID, apply_case
+from tests.support import CASES, NEGATIVE, VALID, apply_case
 
 
 EXPECTED_STYLES = {
+    "breast-synoptic-summary.hl7": "synoptic summary",
     "unstructured-narrative.hl7": "unstructured narrative",
     "structured-narrative.hl7": "structured narrative",
     "synoptic-summary.hl7": "synoptic summary",
     "synoptic-segmented.hl7": "synoptic segmented",
     "cap-ecp.hl7": "CAP eCP",
+}
+
+INVALID_EXAMPLES = {
+    "invalid-ecp-link.hl7": "ECP-003",
+    "invalid-message-type.hl7": "LRI-15",
+    "invalid-missing-specimen.hl7": "STRUCTURE-001",
 }
 
 
@@ -23,6 +30,13 @@ def test_valid_synthetic_styles(name: str, style: str) -> None:
     assert report.valid
     assert report.detected_report_style == style
     assert report.counts["error"] == 0
+
+
+@pytest.mark.parametrize("name,rule_id", INVALID_EXAMPLES.items())
+def test_invalid_synthetic_examples(name: str, rule_id: str) -> None:
+    report = validate_message((NEGATIVE / name).read_text())
+    assert not report.valid
+    assert rule_id in {finding.rule_id for finding in report.findings}
 
 
 @pytest.mark.parametrize("case", CASES, ids=[case["name"] for case in CASES])
@@ -54,7 +68,7 @@ def test_report_contract_omits_raw_message_values() -> None:
     value = apply_case(next(case for case in CASES if case["name"] == "invalid-cnn-npi"))
     report_json = json.dumps(validate_message(value).to_dict())
     assert "1234567890" not in report_json
-    assert "Synthetic diagnostic statement" not in report_json
+    assert "Bone marrow core biopsy" not in report_json
     assert set(validate_message(value).to_dict()) == {
         "schema_version", "ruleset_version", "profile", "detected_report_style",
         "valid", "counts", "findings", "coverage_notices",

@@ -50,7 +50,7 @@
     return lines.join("\r") + "\r";
   }
 
-  function parse(normalized) {
+  function parseSegments(normalized) {
     return normalized.replace(/\r$/, "").split("\r").map((raw, index) => ({ name: raw.slice(0, 3), parts: raw.split("|"), line: index + 1 }));
   }
   function field(segment, number) {
@@ -79,8 +79,21 @@
     return date.getTime();
   }
 
+  function classifyReportStyle(obx) {
+    if (!obx.length) return "not detected";
+    const first = obx[0], firstCode = component(field(first, 3), 1), declaration = field(first, 5);
+    if (firstCode === "60573-3") {
+      if (C.document_styles[declaration]) return C.document_styles[declaration];
+      if (declaration.endsWith(" Synoptic Summary") && !declaration.startsWith("CAP ")) return "synoptic summary";
+      if (declaration.endsWith(" Synoptic Segmented") && !declaration.startsWith("CAP ")) return "synoptic segmented";
+      return "unknown synoptic";
+    }
+    const codes = new Set(obx.map(segment => component(field(segment, 3), 1)));
+    return obx.length > 1 && [...codes].every(code => C.narrative_obx3_loincs.includes(code)) ? "structured narrative" : "unstructured narrative";
+  }
+
   function validateMessage(text) {
-    const segments = parse(normalizeMessage(text));
+    const segments = parseSegments(normalizeMessage(text));
     const findings = [], styles = [];
     const all = name => segments.filter(segment => segment.name === name);
     const one = name => segments.find(segment => segment.name === name);
@@ -200,16 +213,8 @@
     }
     function style(obr, obx) {
       if (!obx.length) return;
-      const first = obx[0], firstCode = component(field(first, 3), 1), declaration = field(first, 5); let reportStyle;
-      if (firstCode === "60573-3") {
-        if (C.document_styles[declaration]) reportStyle = C.document_styles[declaration];
-        else if (declaration.endsWith(" Synoptic Summary") && !declaration.startsWith("CAP ")) reportStyle = "synoptic summary";
-        else if (declaration.endsWith(" Synoptic Segmented") && !declaration.startsWith("CAP ")) reportStyle = "synoptic segmented";
-        else { reportStyle = "unknown synoptic"; add("STYLE-001", "OBX-5", first.line, "Report style declaration is invalid."); }
-      } else {
-        const codes = new Set(obx.map(s => component(field(s, 3), 1)));
-        reportStyle = obx.length > 1 && [...codes].every(code => C.narrative_obx3_loincs.includes(code)) ? "structured narrative" : "unstructured narrative";
-      }
+      const first = obx[0], reportStyle = classifyReportStyle(obx);
+      if (reportStyle === "unknown synoptic") add("STYLE-001", "OBX-5", first.line, "Report style declaration is invalid.");
       styles.push(reportStyle); const code = component(field(obr, 4), 1);
       if (C.deprecated_loincs.includes(code)) add("DEPRECATED-001", "OBR-4", obr.line, "A deprecated report LOINC is used.");
       else if (!C.obr4_loincs.includes(code)) add("OBR4-001", "OBR-4", obr.line, "The report code is not completely enumerated in the draft table.");
@@ -259,5 +264,5 @@
       valid: counts.error === 0, counts, findings, coverage_notices: CATALOG.coverage_notices.slice() };
   }
 
-  return { normalizeMessage, validateMessage };
+  return { normalizeMessage, parseSegments, field, component, classifyReportStyle, validateMessage };
 });

@@ -1,0 +1,68 @@
+{
+  "allowable_values": "1-9",
+  "allowed_codes": [
+    {
+      "code": "1",
+      "description": "Grade I"
+    },
+    {
+      "code": "2",
+      "description": "Grade II"
+    },
+    {
+      "code": "3",
+      "description": "Grade III"
+    },
+    {
+      "code": "4",
+      "description": "Grade IV"
+    },
+    {
+      "code": "5",
+      "description": "T-cell"
+    },
+    {
+      "code": "6",
+      "description": "B-cell"
+    },
+    {
+      "code": "7",
+      "description": "Null cell"
+    },
+    {
+      "code": "8",
+      "description": "NK (natural killer) cell"
+    },
+    {
+      "code": "9",
+      "description": "Grade/differentiation unknown, not stated, or not applicable"
+    }
+  ],
+  "alternate_names": [
+    "Grade, Differentiation, or Cell Lineage Indicator (SEER/CCCR)",
+    "Grade/Differentiation (CoC)"
+  ],
+  "cccr_collect": "Historically collected and currently transmitted",
+  "coc_collect": "Historically collected and currently transmitted",
+  "code_description": "See the grade tables on page 67 of [ICD-O-3](http://www.who.int/classifications/icd/adaptations/oncology/en/).^16^ See also the most recent [CoC STORE](http://www.facs.org/cancer/coc/fordsmanual.html)manual and[SEER Program Code Manual](http://seer.cancer.gov/tools/codingmanuals/), for site specific coding rules and conversions",
+  "code_note": "_Comment:_ Use the most recent Hematopoietic and Lymphoid rules for assigning grades 5-8.",
+  "date_created": "2011-11-09T19:47:21Z",
+  "date_modified": "2023-05-11T19:02:22.205515Z",
+  "description": "Code for the grade or degree of differentiation of the reportable tumor. For lymphomas and leukemias, field also is used to indicate T-, B-, Null-, or NK-cell origin.\r\n\r\n_Note:_ Code 8 was adopted for use with lymphoma cases diagnosed in 1995 and later.",
+  "item_data_type": "digits",
+  "item_length": "1",
+  "item_name": "Grade",
+  "item_number": "440",
+  "npcr_collect": "Historically collected and currently transmitted",
+  "record_types": [
+    "A",
+    "C",
+    "I",
+    "M"
+  ],
+  "section": "Cancer Identification",
+  "seer_collect": "Historically collected and currently transmitted",
+  "source_of_standard": "SEER/CoC",
+  "xml_naaccr_id": "grade",
+  "xml_parent_id": "Tumor"
+}

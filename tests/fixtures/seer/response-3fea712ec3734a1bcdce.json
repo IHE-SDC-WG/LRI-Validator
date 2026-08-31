@@ -1,0 +1,57 @@
+{
+  "allowable_values": "0-5, 9",
+  "allowed_codes": [
+    {
+      "code": "0",
+      "description": "Not a paired site"
+    },
+    {
+      "code": "1",
+      "description": "Right: origin of primary"
+    },
+    {
+      "code": "2",
+      "description": "Left: origin of primary"
+    },
+    {
+      "code": "3",
+      "description": "Only one side involved, right or left origin unspecified"
+    },
+    {
+      "code": "4",
+      "description": "Bilateral involvement at time of diagnosis, lateral origin unknown for a single primary; or both ovaries involved simultaneously, single histology; bilateral retinoblastomas; bilateral Wilms' tumors"
+    },
+    {
+      "code": "5",
+      "description": "Paired site: midline tumor"
+    },
+    {
+      "code": "9",
+      "description": "Paired site, but no information concerning laterality"
+    }
+  ],
+  "alternate_names": [
+    "Laterality at Diagnosis (SEER)"
+  ],
+  "cccr_collect": "Required",
+  "coc_collect": "Required",
+  "date_created": "2011-11-09T14:47:21Z",
+  "date_modified": "2022-05-27T11:24:06Z",
+  "description": "Code for the side of a paired organ, or the side of the body on which the reportable tumor originated. This applies to the primary site only.",
+  "item_data_type": "digits",
+  "item_length": "1",
+  "item_name": "Laterality",
+  "item_number": "410",
+  "npcr_collect": "Required",
+  "record_types": [
+    "A",
+    "C",
+    "I",
+    "M"
+  ],
+  "section": "Cancer Identification",
+  "seer_collect": "Required",
+  "source_of_standard": "SEER/CoC",
+  "xml_naaccr_id": "laterality",
+  "xml_parent_id": "Tumor"
+}

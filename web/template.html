@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>NAACCR LRI offline validator</title>
+  <title>NAACCR LRI validator</title>
   <style>
     :root { color-scheme: light; --ink:#17202a; --muted:#5c6773; --line:#ccd4dc; --paper:#fff; --wash:#f4f7f9; --accent:#155f75; --accent2:#0d4252; --error:#a62b24; --warning:#805800; --info:#285b8f; --ok:#17633b; }
     * { box-sizing:border-box; }
@@ -12,6 +12,8 @@
     header p { margin:7px 0 0; max-width:760px; color:#d9edf2; }
     h1 { margin:0; font-size:clamp(24px,3vw,36px); letter-spacing:-.02em; }
     h2 { margin:0 0 14px; font-size:20px; }
+    h3 { margin:20px 0 10px; font-size:17px; }
+    h4 { margin:18px 0 8px; font-size:15px; }
     main { max-width:1180px; margin:0 auto; padding:24px; }
     .privacy { margin:0 0 20px; padding:13px 16px; border-left:4px solid var(--accent); background:#eaf4f6; }
     .grid { display:grid; grid-template-columns:minmax(0,1.08fr) minmax(360px,.92fr); gap:20px; align-items:start; }
@@ -25,10 +27,12 @@
     button:disabled { opacity:.55; cursor:not-allowed; }
     input[type=file] { max-width:100%; }
     select { padding:8px; border:1px solid #9ba8b4; border-radius:6px; background:#fff; font:inherit; }
+    input[type=password] { min-width:270px; padding:8px; border:1px solid #9ba8b4; border-radius:6px; background:#fff; font:inherit; }
     .status { display:grid; grid-template-columns:1fr auto; gap:12px; align-items:start; border:1px solid var(--line); border-radius:8px; padding:14px; background:var(--wash); }
     .status strong { font-size:18px; }
     .status.pass { border-left:6px solid var(--ok); }
     .status.fail { border-left:6px solid var(--error); }
+    .status.partial { border-left:6px solid var(--info); }
     .counts { display:flex; flex-wrap:wrap; gap:8px; margin:14px 0; }
     .count { border:1px solid currentColor; border-radius:999px; padding:3px 9px; font-weight:650; }
     .error { color:var(--error); } .warning { color:var(--warning); } .information { color:var(--info); }
@@ -48,19 +52,33 @@
     details { margin-top:15px; }
     details li { margin:6px 0; }
     .error-box { border-left:5px solid var(--error); background:#fff0ef; padding:12px; margin:12px 0 0; }
+    .content-panel { border-top:1px solid var(--line); margin-top:20px; padding-top:2px; }
+    .content-panel > p { margin:8px 0; }
+    .outbound-review { margin:14px 0 0; padding:12px 14px; border:1px solid #9fc4ce; border-left:4px solid var(--accent); border-radius:6px; background:#f3fafb; }
+    .outbound-review p { margin:0 0 7px; }
+    .content-disclosure { margin:8px 0 0; padding-left:22px; overflow-wrap:anywhere; }
+    .content-disclosure li { margin:5px 0; }
+    .content-live { min-height:23px; color:var(--muted); margin:10px 0 0; }
+    .query-log { margin-top:18px; }
+    .queries { list-style:none; max-height:360px; margin:0; padding:0; overflow:auto; overflow-wrap:anywhere; }
+    .query-item { margin:0 0 8px; }
+    .query-item details { margin:0; border:1px solid var(--line); border-radius:6px; background:#fff; }
+    .query-item summary { padding:10px 12px; cursor:pointer; font-weight:600; }
+    .query-item summary:hover { background:#f7fbfc; }
+    .query-raw { margin:0; padding:10px 12px; border-top:1px solid var(--line); background:var(--wash); white-space:pre-wrap; overflow-wrap:anywhere; font:12px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace; }
     footer { max-width:1180px; margin:0 auto; padding:0 24px 28px; color:var(--muted); font-size:13px; }
     [hidden] { display:none !important; }
     @media (max-width:850px) { .grid { grid-template-columns:1fr; } textarea { min-height:300px; } }
-    @media print { body { background:#fff; } header { color:#000; background:#fff; padding:0 0 18px; } header p { color:#333; } main { padding:0; max-width:none; } .privacy,.editor,.controls,footer { display:none !important; } .grid { display:block; } .card { border:0; box-shadow:none; padding:0; } .findings { max-height:none; overflow:visible; } .finding button { break-inside:avoid; } }
+    @media print { body { background:#fff; } header { color:#000; background:#fff; padding:0 0 18px; } header p { color:#333; } main { padding:0; max-width:none; } .privacy,.editor,.controls,.content-run-controls,footer { display:none !important; } .grid { display:block; } .card { border:0; box-shadow:none; padding:0; } .findings { max-height:none; overflow:visible; } .finding button { break-inside:avoid; } }
   </style>
 </head>
 <body>
   <header>
-    <h1>NAACCR LRI offline validator</h1>
-    <p>Context-free checks for one HL7 v2.5.1 ORU_R01 cancer-pathology message, pinned to the May 2026 LRI ballot draft.</p>
+    <h1>NAACCR LRI validator</h1>
+    <p>Local syntax checks for one HL7 v2.5.1 ORU_R01 cancer-pathology message, with an optional SEER registry-content check.</p>
   </header>
   <main>
-    <p class="privacy"><strong>Privacy:</strong> Your message stays in this tab. This file makes no network requests and uses no browser storage. Downloaded and printed reports omit the raw message and message values.</p>
+    <p class="privacy"><strong>Privacy:</strong> Syntax validation is offline. The optional registry-content check sends only the codes and reference identifiers listed before you run it, never the full message or direct identifiers. Those codes are sensitive clinical metadata. The SEER key stays in memory in this tab, and no browser storage is used.</p>
     <div class="grid">
       <form id="input-form" class="card editor" aria-labelledby="input-heading">
         <h2 id="input-heading">Message input</h2>
@@ -73,7 +91,7 @@
         </div>
         <div class="row">
           <label for="sample">Synthetic sample</label>
-          <select id="sample"><option value="">Select a report style</option></select>
+          <select id="sample"><option value="">Select an example</option></select>
           <button id="load-sample" class="secondary" type="button">Load sample</button>
         </div>
         <div class="row">
@@ -106,6 +124,42 @@
           </div>
           <ol id="findings" class="findings"></ol>
           <details><summary>Coverage notices</summary><ul id="coverage"></ul></details>
+          <section id="content-panel" class="content-panel" aria-labelledby="content-heading" data-content-state="idle" hidden>
+            <h3 id="content-heading">Registry content check (optional, online)</h3>
+            <p>This check sends extracted codes to <span class="rule">https://api.seer.cancer.gov/rest/</span>. SEER algorithm, version, schema, table, NAACCR item, and disease identifiers may also be sent as the checks proceed. The full HL7 message is never sent.</p>
+            <div class="content-run-controls">
+              <div class="row">
+                <label for="seer-key">SEER API key</label>
+                <input id="seer-key" type="password" autocomplete="off" aria-describedby="seer-key-help">
+              </div>
+              <p id="seer-key-help">The key is sent only in the <span class="rule">X-SEERAPI-Key</span> request header and is not included in downloads.</p>
+              <div class="row">
+                <button id="run-content" type="button">Check registry content</button>
+                <button id="cancel-content" class="secondary" type="button" disabled>Cancel</button>
+              </div>
+              <div class="outbound-review" aria-labelledby="outbound-review-heading">
+                <p id="outbound-review-heading"><strong>Items from this message that will be sent to SEER</strong></p>
+                <p>Review each item and confirm that you are permitted to send it before running the check.</p>
+                <ul id="content-disclosure" class="content-disclosure"></ul>
+              </div>
+            </div>
+            <p id="content-status" class="content-live" role="status" aria-live="polite"></p>
+            <div id="content-error" class="error-box" role="alert" hidden></div>
+            <div id="content-report" hidden>
+              <div id="content-result" class="status" role="status">
+                <div><strong id="content-result-label"></strong><div id="content-ruleset-label" class="rule"></div></div>
+              </div>
+              <div id="content-counts" class="counts"></div>
+              <ol id="content-findings" class="findings"></ol>
+              <section class="query-log" aria-labelledby="query-log-heading">
+                <h4 id="query-log-heading">SEER requests made</h4>
+                <ol id="content-queries" class="queries"></ol>
+              </section>
+              <details><summary>Content-check coverage notices</summary><ul id="content-coverage"></ul></details>
+              <div class="row controls"><button id="content-download" class="secondary" type="button">Download content JSON</button></div>
+              <p id="content-attribution"></p>
+            </div>
+          </section>
         </div>
       </section>
     </div>
@@ -122,7 +176,8 @@
     };
   </script>
   <script>/*__DATA__*/</script>
-  <script>/*__VALIDATOR__*/</script>
+  <script>/*__VALIDATOR__*/
+/*__CONTENT__*/</script>
   <script>/*__APP__*/</script>
 </body>
 </html>

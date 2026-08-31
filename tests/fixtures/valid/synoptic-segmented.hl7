@@ -1,11 +1,12 @@
 MSH|^~\&|SYNAPP^2.16.840.1.113883.19.77^ISO|SYNLAB^2.16.840.1.113883.19.77^ISO|REGAPP^2.16.840.1.113883.19.77^ISO|REGISTRY^2.16.840.1.113883.19.77^ISO|202608281000-0400||ORU^R01^ORU_R01|SYN0001|P|2.5.1|||NE|AL|CAN||eng^English^ISO639||LRI_NAACCR_Component^^2.16.840.1.113883.9.195.3.31^ISO~LRI_Common_Component_V3^^2.16.840.1.113883.9.195.3.22^ISO~LRI_NG_Component_R1^^2.16.840.1.113883.9.13^ISO~LAB_FRU_Component^^2.16.840.1.113883.9.83^ISO
-PID|1||PAT0001^^^LOCAL&2.16.840.1.113883.19.77&ISO^MR||Lin^Case^^^^^^L||19800101|F
+PID|1||PAT0001^^^LOCAL&2.16.840.1.113883.19.77&ISO^MR||Lin^Case^^^^^^L||19800101|M
 PV1|1|O
 ORC|RE||FILL0001^SYNLAB^2.16.840.1.113883.19.77^ISO|||||||||PRV001^Lin^Morgan^^^^^^LOCAL&2.16.840.1.113883.19.77&ISO|||||||||Synthetic Pathology Laboratory^L^^^^LOCAL&2.16.840.1.113883.19.77&ISO
 OBR|1||FILL0001^SYNLAB^2.16.840.1.113883.19.77^ISO|60568-3^Synoptic report^LN|||202608270900-0400|||||||||PRV001^Lin^Morgan^^^^^^LOCAL&2.16.840.1.113883.19.77&ISO|||||4165550101|202608271200-0400|||F|||||||PRV001&Lin&Morgan&&&&&&&2.16.840.1.113883.19.77&ISO
 OBX|1|TX|60573-3^Report template source^LN||CAP Synoptic Segmented||||||F
-OBX|2|TX|60572-5^Report template ID^LN||Synthetic Resection Template||||||F
+OBX|2|TX|60572-5^Report template ID^LN||Prostate Resection||||||F
 OBX|3|TX|60574-1^Report template version ID^LN||1.0.0||||||F
-OBX|4|TX|^Procedure||Synthetic excision||||||F
-OBX|5|TX|^Final diagnosis||Synthetic carcinoma||||||F
-SPM|1|^SPEC0001&SYNLAB&2.16.840.1.113883.19.77&ISO||TISS^Tissue specimen^HL70487|||||||||||||202608270900-0400|202608271000-0400
+OBX|4|TX|^Primary Site||Prostate (C61.9)||||||F
+OBX|5|TX|^Histologic Type||Acinar adenocarcinoma (8140/3)||||||F
+OBX|6|TX|^Histologic Grade||Grade 3||||||F
+SPM|1|^SPEC0001&SYNLAB&2.16.840.1.113883.19.77&ISO||TISS^Prostate tissue specimen^HL70487||||C61.9^Prostate^ICD-O-3|||||||||202608270900-0400|202608271000-0400

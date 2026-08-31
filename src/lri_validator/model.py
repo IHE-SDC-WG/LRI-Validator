@@ -5,6 +5,7 @@ from typing import Literal
 
 
 Severity = Literal["error", "warning", "information"]
+ContentStatus = Literal["complete", "partial", "not-applicable"]
 
 
 @dataclass(frozen=True, slots=True)
@@ -35,5 +36,28 @@ class ValidationReport:
     def to_dict(self) -> dict[str, object]:
         data = asdict(self)
         data["findings"] = [finding.to_dict() for finding in self.findings]
+        data["coverage_notices"] = list(self.coverage_notices)
+        return data
+
+
+@dataclass(frozen=True, slots=True)
+class ContentReport:
+    schema_version: str
+    content_ruleset_version: str
+    profile: str
+    based_on: dict[str, object]
+    status: ContentStatus
+    valid: bool
+    counts: dict[str, int]
+    findings: tuple[Finding, ...]
+    extraction: dict[str, object]
+    queries: tuple[dict[str, object], ...]
+    coverage_notices: tuple[str, ...]
+    attribution: str
+
+    def to_dict(self) -> dict[str, object]:
+        data = asdict(self)
+        data["findings"] = [finding.to_dict() for finding in self.findings]
+        data["queries"] = [dict(query) for query in self.queries]
         data["coverage_notices"] = list(self.coverage_notices)
         return data

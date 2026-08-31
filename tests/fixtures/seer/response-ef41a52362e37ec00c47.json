@@ -1,0 +1,48 @@
+{
+  "applied_rules": [
+    {
+      "notes": [
+        "Tumors with site codes that differ at the second or third character are in different primary sites; for example, a breast tumor C50x and a colon tumor C18x differ at the second and third character.",
+        "This rule does not include metastases. Metastatic tumors are not used to determine multiple primaries; for example, liver metastases from the breast cancer would not be counted as a second primary."
+      ],
+      "question": "Are there tumors in sites with ICD-O-3 topography codes that are different at the second (C?xx) and/or third character (Cx?x)?",
+      "reason": "Tumors in sites with ICD-O-3 topography codes that are different at the second (C?xx) and/or third (Cx?x) character are multiple primaries.",
+      "step": "M4"
+    },
+    {
+      "notes": [
+        "The rules are hierarchical. This rule only applies when there is a subsequent breast tumor.",
+        "Clinically disease-free means that there was no evidence of recurrence on follow-up.",
+        "  - Mammograms are NED",
+        "  - Scans are NED",
+        "  - Tumor biomarkers are NED",
+        "When there is a recurrence less than or equal to five years of diagnosis, the \"clock\" starts over. The time interval is calculated from the date of last recurrence. In other words, the patient must have been disease-free for greater than five years from the date of the last recurrence.",
+        "When it is unknown/not documented whether the patient had a recurrence, use date of diagnosis to compute the time interval.",
+        "The physician may state this is a recurrence, meaning the patient had a previous breast tumor and now has another breast tumor. Follow the rules; do not attempt to interpret the physician’s statement."
+      ],
+      "question": "Are there tumors diagnosed more than 5 years apart?",
+      "reason": "Tumors diagnosed more than 5 years apart are multiple primaries.",
+      "step": "M5"
+    },
+    {
+      "question": "Is there inflammatory carcinoma in multiple quadrants of the same breast or in bilateral breasts?",
+      "reason": "Inflammatory carcinoma in multiple quadrants of the same breast or in bilateral breasts is a single primary.",
+      "step": "M6"
+    },
+    {
+      "notes": [
+        "Physician statement \"bilateral breast cancer\" should not be interpreted as meaning a single primary. The term is descriptive and not used consistently.  The literal definition of bilateral is \"cancer in both breasts\".",
+        "It is irrelevant how many tumors are in each breast. Abstract as separate primaries.",
+        "The histologies within each breast may be the same or different."
+      ],
+      "question": "Is there a tumor(s) in each breast?",
+      "reason": "Tumors on both sides (right and left breast) are multiple primaries.",
+      "step": "M7"
+    }
+  ],
+  "group_id": "str_2018_and_later_breast",
+  "group_name": "Solid Tumor 2018+ Breast",
+  "reason": "Tumors on both sides (right and left breast) are multiple primaries.",
+  "result": "MULTIPLE_PRIMARIES",
+  "step": "M7"
+}
