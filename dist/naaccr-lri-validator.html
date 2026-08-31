@@ -1892,18 +1892,28 @@ window.__LRI_SAMPLES__["unstructured-narrative"] = [
   function renderDisclosure(extraction) {
     var list = byId("content-disclosure");
     empty(list);
+    var pairEligible = extraction.groups.filter(function (group) { return group.site && group.histology; });
+    var runsPairCheck = pairEligible.length > 1;
     var fields = [
       ["site", "Primary site (ICD-O-3)"],
       ["histology", "Histology (ICD-O-3)"],
       ["behavior", "Behavior (ICD-O-3)"],
       ["laterality", "Laterality (NAACCR)"],
-      ["grade", "Grade (NAACCR)"],
       ["year", "Diagnosis year"]
     ];
     extraction.groups.forEach(function (group) {
+      var hasStagingInputs = group.site && group.histology;
+      var histology = group.histology ? Number(group.histology.value) : null;
+      var contentConfig = (window.__LRI_CATALOG__ || {}).content || {};
+      var isHematopoietic = histology != null && histology >= Number(contentConfig.heme_histology_min);
       fields.forEach(function (definition) {
+        var fieldName = definition[0];
         var field = group[definition[0]];
         if (!field) return;
+        if (fieldName === "laterality" && !(hasStagingInputs && runsPairCheck)) return;
+        if ((fieldName === "site" || fieldName === "year") && !hasStagingInputs) return;
+        if (fieldName === "histology" && !(hasStagingInputs || (isHematopoietic && group.behavior))) return;
+        if (fieldName === "behavior" && !(hasStagingInputs && (runsPairCheck || isHematopoietic || ["0", "1", "2", "3"].indexOf(field.value) !== -1)) && !(isHematopoietic && group.histology)) return;
         var item = document.createElement("li");
         var line = field.line_number == null ? "" : " (message line " + field.line_number + ")";
         item.textContent = "Order group " + group.group + ", " + definition[1] + ": " + field.value + line;
@@ -2099,7 +2109,11 @@ window.__LRI_SAMPLES__["unstructured-narrative"] = [
       }
       try {
         var response = await fetch(url, options);
-        var data = await response.json();
+        var data = null;
+        if (response.status >= 200 && response.status < 300) {
+          var raw = await response.text();
+          if (raw) data = await new Response(raw).json();
+        }
         return { status: response.status, data: data };
       } catch (error) {
         if (signal.aborted) throw new window.LriContent.SeerError("aborted", "The registry content check was cancelled.");

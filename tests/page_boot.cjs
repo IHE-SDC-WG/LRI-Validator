@@ -74,6 +74,7 @@ const context = {
   console,
   document,
   Blob,
+  Response,
   AbortController,
   URL: { createObjectURL() { return "blob:test"; }, revokeObjectURL() {} }
 };
@@ -142,7 +143,21 @@ async function main() {
   const disclosure = elements["content-disclosure"].children.map(item => item.textContent).join(" ");
   assert.match(disclosure, /Primary site \(ICD-O-3\): C504 \(message line 9\)/);
   assert.match(disclosure, /Histology \(ICD-O-3\): 8500 \(message line 9\)/);
+  assert.match(disclosure, /Behavior \(ICD-O-3\): 3 \(message line 9\)/);
+  assert.match(disclosure, /Diagnosis year: 2026 \(message line 10\)/);
+  assert.doesNotMatch(disclosure, /Laterality/);
+  assert.doesNotMatch(disclosure, /Grade/);
   assert.equal(elements["content-panel"]["data-content-state"], "idle");
+
+  elements.message.value = fs.readFileSync("tests/fixtures/content/two-group-mph.hl7", "utf8");
+  await elements.validate.click();
+  const pairDisclosure = elements["content-disclosure"].children.map(item => item.textContent).join(" ");
+  assert.match(pairDisclosure, /Order group 1, Laterality \(NAACCR\): 2/);
+  assert.match(pairDisclosure, /Order group 2, Laterality \(NAACCR\): 1/);
+  assert.doesNotMatch(pairDisclosure, /Grade/);
+
+  elements.message.value = context.__LRI_SAMPLES__["breast-synoptic-summary"];
+  await elements.validate.click();
 
   await elements["run-content"].click();
   assert.equal(elements["content-panel"]["data-content-state"], "error");
@@ -160,7 +175,7 @@ async function main() {
     requests.push({ method, url, body });
     return {
       status: Number(index[key].status),
-      async json() { return JSON.parse(fs.readFileSync(`tests/fixtures/seer/${index[key].file}`, "utf8")); }
+      async text() { return fs.readFileSync(`tests/fixtures/seer/${index[key].file}`, "utf8"); }
     };
   };
   elements["seer-key"].value = "browser-test-key";
@@ -180,13 +195,22 @@ async function main() {
   assert.match(querySummaries, /Check Laterality using NAACCR item 410 \(version 26\) \(Completed\)/);
   assert.match(queryDetails[0].children[1].textContent, /^POST https:\/\/api[.]seer[.]cancer[.]gov\/rest\/.*body=.*\(HTTP 200\)$/);
 
-  context.LriContent.sessionCache.clear();
-  await elements.validate.click();
-  context.fetch = async () => ({ status: 401, async json() { return { status: 401 }; } });
-  await elements["run-content"].click();
-  assert.equal(elements["content-panel"]["data-content-state"], "done", "HTTP failures resolve to reports");
-  assert.match(elements["content-result-label"].textContent, /^INCOMPLETE:/);
-  assert.equal(elements["content-error"].hidden, true);
+  for (const failure of [
+    { status: 401, label: /Authentication failed/ },
+    { status: 403, label: /Blocked or rate-limited/ },
+    { status: 429, label: /Blocked or rate-limited/ }
+  ]) {
+    context.LriContent.sessionCache.clear();
+    await elements.validate.click();
+    context.fetch = async () => ({ status: failure.status, async text() { return ""; } });
+    await elements["run-content"].click();
+    assert.equal(elements["content-panel"]["data-content-state"], "done", "HTTP failures resolve to reports");
+    assert.match(elements["content-result-label"].textContent, /^INCOMPLETE:/);
+    assert.equal(elements["content-error"].hidden, true);
+    const failureSummary = elements["content-queries"].children[0].children[0].children[0].textContent;
+    assert.match(failureSummary, failure.label, `empty HTTP ${failure.status} body keeps status classification`);
+    assert.doesNotMatch(failureSummary, /Network request failed/);
+  }
 
   context.LriContent.sessionCache.clear();
   await elements.validate.click();

@@ -30,7 +30,7 @@ The finding list can be filtered by severity. Selecting a finding focuses the as
 
 The content panel appears only after a syntax-valid message contains extractable registry codes. All bundled examples include independently synthetic site and histology data and can run the SEER check. Before any request, the panel lists each normalized message-derived item, its message line, and the value proposed for transmission. You must enter a [free SEER API key](https://api.seer.cancer.gov/login) and select **Check registry content**. Returned requests use readable descriptions; each description can be opened to inspect the exact method, URL, body, cache state, and HTTP status.
 
-The browser sends only these extracted code fields when present: primary site, histology, behavior, laterality, grade, and diagnosis year. Follow-up calls also send SEER algorithm, version, schema, table, NAACCR item, and disease identifiers. The full HL7 message, patient identifiers, provider identifiers, facility identifiers, and arbitrary narrative text are never sent.
+The browser sends only the extracted fields listed in the review panel. Primary site, histology, behavior, and diagnosis year are sent when applicable. Laterality is sent only when two order groups qualify for a multiple-primary comparison. Grade is checked locally against SEER reference data and is not sent. Follow-up calls also send SEER algorithm, version, schema, table, NAACCR item, and disease identifiers. The full HL7 message, patient identifiers, provider identifiers, facility identifiers, and arbitrary narrative text are never sent.
 
 The extractor can read an ICD-O topography from the structured specimen type or source-site fields, SPM-4 and SPM-8, as well as from report observations. LRI does not carry a dedicated registry diagnosis-date item in this flow. When a year is available, the validator infers it from SPM-17 first and OBR-7 second, labels that source in the report, and includes a coverage notice.
 
@@ -104,7 +104,7 @@ The build is deterministic. The tracked HTML contains exactly one `fetch(` call 
 Current artifact SHA-256:
 
 ```text
-2ad4090b93decccf191e986a823550b4afd893d338e422bde125e65530af2ffd  dist/naaccr-lri-validator.html
+ccabe3d441914a7ca6dd3104742cb0f88704c6fd926c88c10a084eab59a64326  dist/naaccr-lri-validator.html
 ```
 
 ## Privacy
