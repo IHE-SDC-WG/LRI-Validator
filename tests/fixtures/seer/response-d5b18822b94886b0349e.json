@@ -1,0 +1,23 @@
+[
+  {
+    "id": "prostate",
+    "name": "Prostate",
+    "staging_inputs": [
+      "eod_mets",
+      "site",
+      "hist",
+      "grade_path",
+      "eod_prostate_path_extension",
+      "eod_primary_tumor",
+      "grade_clin",
+      "eod_regional_nodes"
+    ],
+    "staging_outputs": [
+      "derived_summary_grade",
+      "derived_version",
+      "ss2018_derived",
+      "naaccr_schema_id"
+    ],
+    "title": "Prostate"
+  }
+]

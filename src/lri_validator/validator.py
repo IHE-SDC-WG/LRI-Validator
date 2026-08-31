@@ -106,12 +106,15 @@ def normalize_message(text: str) -> str:
     return "\r".join(lines) + "\r"
 
 
-def _segments(normalized: str) -> list[Segment]:
+def parse_segments(normalized: str) -> list[Segment]:
     result: list[Segment] = []
     for line, raw in enumerate(normalized.rstrip("\r").split("\r"), 1):
         name = raw[:3]
         result.append(Segment(name, tuple(raw.split("|")), line))
     return result
+
+
+_segments = parse_segments
 
 
 def _components(value: str, separator: str = "^") -> list[str]:
@@ -146,6 +149,23 @@ def _parse_date(value: str) -> datetime | None:
         return datetime.strptime(padded, "%Y%m%d%H%M%S")
     except ValueError:
         return None
+
+
+def classify_report_style(obx: list[Segment]) -> str:
+    if not obx:
+        return "not detected"
+    first = obx[0]
+    first_code, declaration = _component(first.field(3), 1), first.field(5)
+    if first_code == "60573-3":
+        if declaration in CONSTANTS["document_styles"]:
+            return CONSTANTS["document_styles"][declaration]
+        if declaration.endswith(" Synoptic Summary") and not declaration.startswith("CAP "):
+            return "synoptic summary"
+        if declaration.endswith(" Synoptic Segmented") and not declaration.startswith("CAP "):
+            return "synoptic segmented"
+        return "unknown synoptic"
+    codes = {_component(item.field(3), 1) for item in obx}
+    return "structured narrative" if len(obx) > 1 and codes.issubset(set(CONSTANTS["narrative_obx3_loincs"])) else "unstructured narrative"
 
 
 class Evaluator:
@@ -401,20 +421,9 @@ class Evaluator:
         if not obx:
             return
         first = obx[0]
-        first_code, declaration = _component(first.field(3), 1), first.field(5)
-        if first_code == "60573-3":
-            if declaration in CONSTANTS["document_styles"]:
-                style = CONSTANTS["document_styles"][declaration]
-            elif declaration.endswith(" Synoptic Summary") and not declaration.startswith("CAP "):
-                style = "synoptic summary"
-            elif declaration.endswith(" Synoptic Segmented") and not declaration.startswith("CAP "):
-                style = "synoptic segmented"
-            else:
-                style = "unknown synoptic"
-                self.add("STYLE-001", "OBX-5", first.line, "The first OBX has an unrecognized report style declaration.")
-        else:
-            codes = {_component(item.field(3), 1) for item in obx}
-            style = "structured narrative" if len(obx) > 1 and codes.issubset(set(CONSTANTS["narrative_obx3_loincs"])) else "unstructured narrative"
+        style = classify_report_style(obx)
+        if style == "unknown synoptic":
+            self.add("STYLE-001", "OBX-5", first.line, "The first OBX has an unrecognized report style declaration.")
         self.styles.append(style)
         code = _component(obr.field(4), 1)
         if code in CONSTANTS["deprecated_loincs"]:
@@ -515,7 +524,7 @@ class Evaluator:
 
 def validate_message(text: str) -> ValidationReport:
     normalized = normalize_message(text)
-    evaluator = Evaluator(_segments(normalized))
+    evaluator = Evaluator(parse_segments(normalized))
     evaluator.run()
     findings = tuple(sorted(evaluator.findings, key=lambda finding: (finding.line_number or 0, finding.rule_id, finding.location)))
     counts = {severity: sum(finding.severity == severity for finding in findings) for severity in ("error", "warning", "information")}

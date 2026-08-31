@@ -9,6 +9,7 @@ from tests.support import CASES, VALID, apply_case
 
 
 EXPECTED_STYLES = {
+    "breast-synoptic-summary.hl7": "synoptic summary",
     "unstructured-narrative.hl7": "unstructured narrative",
     "structured-narrative.hl7": "structured narrative",
     "synoptic-summary.hl7": "synoptic summary",
@@ -54,7 +55,7 @@ def test_report_contract_omits_raw_message_values() -> None:
     value = apply_case(next(case for case in CASES if case["name"] == "invalid-cnn-npi"))
     report_json = json.dumps(validate_message(value).to_dict())
     assert "1234567890" not in report_json
-    assert "Synthetic diagnostic statement" not in report_json
+    assert "Bone marrow core biopsy" not in report_json
     assert set(validate_message(value).to_dict()) == {
         "schema_version", "ruleset_version", "profile", "detected_report_style",
         "valid", "counts", "findings", "coverage_notices",

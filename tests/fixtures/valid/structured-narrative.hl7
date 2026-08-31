@@ -3,6 +3,6 @@ PID|1||PAT0001^^^LOCAL&2.16.840.1.113883.19.77&ISO^MR||Lin^Case^^^^^^L||19800101
 PV1|1|O
 ORC|RE||FILL0001^SYNLAB^2.16.840.1.113883.19.77^ISO|||||||||PRV001^Lin^Morgan^^^^^^LOCAL&2.16.840.1.113883.19.77&ISO|||||||||Synthetic Pathology Laboratory^L^^^^LOCAL&2.16.840.1.113883.19.77&ISO
 OBR|1||FILL0001^SYNLAB^2.16.840.1.113883.19.77^ISO|11529-5^Surgical pathology study^LN|||202608270900-0400|||||||||PRV001^Lin^Morgan^^^^^^LOCAL&2.16.840.1.113883.19.77&ISO|||||4165550101|202608271200-0400|||F|||||||PRV001&Lin&Morgan&&&&&&&2.16.840.1.113883.19.77&ISO
-OBX|1|TX|22634-0^Pathology report.gross observation^LN|1|Synthetic gross description||||||F|||202608270900-0400|||PRV001^Lin^Morgan^^^^^^LOCAL&2.16.840.1.113883.19.77&ISO|||202608271130-0400
-OBX|2|TX|22637-3^Path report.final diagnosis^LN|1|Synthetic final diagnosis||||||F|||202608270900-0400|||PRV001^Lin^Morgan^^^^^^LOCAL&2.16.840.1.113883.19.77&ISO|||202608271130-0400
-SPM|1|^SPEC0001&SYNLAB&2.16.840.1.113883.19.77&ISO||TISS^Tissue specimen^HL70487|||||||||||||202608270900-0400|202608271000-0400
+OBX|1|TX|22634-0^Pathology report.gross observation^LN|1|Left breast lumpectomy from the upper-outer quadrant.||||||F|||202608270900-0400|||PRV001^Lin^Morgan^^^^^^LOCAL&2.16.840.1.113883.19.77&ISO|||202608271130-0400
+OBX|2|TX|22637-3^Path report.final diagnosis^LN|1|Primary Site: Upper-outer quadrant of breast (C50.4)\.br\Histologic Type: Invasive carcinoma (8500/3)\.br\Laterality: Left\.br\Histologic Grade: G2||||||F|||202608270900-0400|||PRV001^Lin^Morgan^^^^^^LOCAL&2.16.840.1.113883.19.77&ISO|||202608271130-0400
+SPM|1|^SPEC0001&SYNLAB&2.16.840.1.113883.19.77&ISO||TISS^Breast tissue specimen^HL70487||||C50.4^Upper-outer quadrant of breast^ICD-O-3|7771000^Left^SCT||||||||202608270900-0400|202608271000-0400

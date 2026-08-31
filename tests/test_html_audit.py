@@ -60,6 +60,7 @@ def test_generated_html_structure_and_local_only_contract() -> None:
     assert not audit.buttons_without_type
     assert html.count("<script") == html.count("</script>") == 4
     assert max(map(len, html.splitlines())) < 1000
+    assert "innerHTML" not in html
 
 
 def test_application_dom_references_exist() -> None:
@@ -68,3 +69,11 @@ def test_application_dom_references_exist() -> None:
     ids = set(re.findall(r'\bid="([^"]+)"', html))
     references = set(re.findall(r'\bbyId\("([^"]+)"\)', app))
     assert references <= ids
+
+
+def test_outbound_review_follows_registry_check_button() -> None:
+    html = (ROOT / "dist" / "naaccr-lri-validator.html").read_text(encoding="utf-8")
+    button = html.index('id="run-content"')
+    review = html.index('id="outbound-review-heading"')
+    disclosure = html.index('id="content-disclosure"')
+    assert button < review < disclosure

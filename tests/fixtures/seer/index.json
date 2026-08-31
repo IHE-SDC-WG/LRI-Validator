@@ -1,0 +1,118 @@
+{
+  "{\"body\":null,\"method\":\"GET\",\"url\":\"https://api.seer.cancer.gov/rest/disease/latest/id/51f6cf5ae3e27c3994bd54aa\"}": {
+    "file": "response-a8ef72aafbc83bb1ccfa.json",
+    "status": 200
+  },
+  "{\"body\":null,\"method\":\"GET\",\"url\":\"https://api.seer.cancer.gov/rest/disease/latest/same_primary?d1=9732%2F3&d2=9732%2F3&year1=2026&year2=2026\"}": {
+    "file": "response-5a7468feaf029ace617b.json",
+    "status": 200
+  },
+  "{\"body\":null,\"method\":\"GET\",\"url\":\"https://api.seer.cancer.gov/rest/disease/latest?q=9732%2F3&type=HEMATO\"}": {
+    "file": "response-6687cf766651997509d3.json",
+    "status": 200
+  },
+  "{\"body\":null,\"method\":\"GET\",\"url\":\"https://api.seer.cancer.gov/rest/disease/latest?q=9999%2F3&type=HEMATO\"}": {
+    "file": "response-c2a4120161fe6dc1cfa5.json",
+    "status": 200
+  },
+  "{\"body\":null,\"method\":\"GET\",\"url\":\"https://api.seer.cancer.gov/rest/naaccr/26/410\"}": {
+    "file": "response-3fea712ec3734a1bcdce.json",
+    "status": 200
+  },
+  "{\"body\":null,\"method\":\"GET\",\"url\":\"https://api.seer.cancer.gov/rest/naaccr/26/440\"}": {
+    "file": "response-21417c7589a8dcb6ae64.json",
+    "status": 200
+  },
+  "{\"body\":null,\"method\":\"GET\",\"url\":\"https://api.seer.cancer.gov/rest/recode/sitegroup/seer?behavior=3&hist=1234&site=C999\"}": {
+    "file": "response-44014eb85c70da551a22.json",
+    "status": 200
+  },
+  "{\"body\":null,\"method\":\"GET\",\"url\":\"https://api.seer.cancer.gov/rest/recode/sitegroup/seer?behavior=3&hist=8140&site=C349\"}": {
+    "file": "response-77bc6b4c4fcc74e64192.json",
+    "status": 200
+  },
+  "{\"body\":null,\"method\":\"GET\",\"url\":\"https://api.seer.cancer.gov/rest/recode/sitegroup/seer?behavior=3&hist=8140&site=C619\"}": {
+    "file": "response-e3e30edb5e350909a483.json",
+    "status": 200
+  },
+  "{\"body\":null,\"method\":\"GET\",\"url\":\"https://api.seer.cancer.gov/rest/recode/sitegroup/seer?behavior=3&hist=8500&site=C501\"}": {
+    "file": "response-c1179648438e0503310d.json",
+    "status": 200
+  },
+  "{\"body\":null,\"method\":\"GET\",\"url\":\"https://api.seer.cancer.gov/rest/recode/sitegroup/seer?behavior=3&hist=8500&site=C504\"}": {
+    "file": "response-aa128c541355a5164378.json",
+    "status": 200
+  },
+  "{\"body\":null,\"method\":\"GET\",\"url\":\"https://api.seer.cancer.gov/rest/recode/sitegroup/seer?behavior=3&hist=9732&site=C421\"}": {
+    "file": "response-fd1689491149e5bdfe9e.json",
+    "status": 200
+  },
+  "{\"body\":null,\"method\":\"GET\",\"url\":\"https://api.seer.cancer.gov/rest/recode/sitegroup/seer?behavior=3&hist=9999&site=C421\"}": {
+    "file": "response-a134f0b31527afde0bd2.json",
+    "status": 200
+  },
+  "{\"body\":null,\"method\":\"GET\",\"url\":\"https://api.seer.cancer.gov/rest/recode/sitegroup/seer?hist=8500&site=C504\"}": {
+    "file": "response-8ac66c67a5aaf8a15de6.json",
+    "status": 200
+  },
+  "{\"body\":null,\"method\":\"GET\",\"url\":\"https://api.seer.cancer.gov/rest/staging/eod_public/3.3/schema/breast\"}": {
+    "file": "response-54bb627dc40e08a14cea.json",
+    "status": 200
+  },
+  "{\"body\":null,\"method\":\"GET\",\"url\":\"https://api.seer.cancer.gov/rest/staging/eod_public/3.3/schema/plasma_cell_myeloma\"}": {
+    "file": "response-ba84baa4e4953552a286.json",
+    "status": 200
+  },
+  "{\"body\":null,\"method\":\"GET\",\"url\":\"https://api.seer.cancer.gov/rest/staging/eod_public/3.3/schema/prostate\"}": {
+    "file": "response-70dcef727d001bca2ea0.json",
+    "status": 200
+  },
+  "{\"body\":null,\"method\":\"GET\",\"url\":\"https://api.seer.cancer.gov/rest/staging/eod_public/3.3/table/behavior\"}": {
+    "file": "response-d6f6ec996155de5f86d1.json",
+    "status": 200
+  },
+  "{\"body\":null,\"method\":\"GET\",\"url\":\"https://api.seer.cancer.gov/rest/staging/eod_public/3.3/table/grade_pathological_20069\"}": {
+    "file": "response-a329db9b6829be0e0dc1.json",
+    "status": 200
+  },
+  "{\"body\":null,\"method\":\"GET\",\"url\":\"https://api.seer.cancer.gov/rest/staging/eod_public/3.3/table/grade_pathological_47031\"}": {
+    "file": "response-405e2ae37dddd1982717.json",
+    "status": 200
+  },
+  "{\"body\":{\"behavior\":\"3\",\"hist\":\"1234\",\"site\":\"C999\",\"year_dx\":\"2026\"},\"method\":\"POST\",\"url\":\"https://api.seer.cancer.gov/rest/staging/eod_public/3.3/schemas/lookup\"}": {
+    "file": "response-ff6222347f6c3544b958.json",
+    "status": 200
+  },
+  "{\"body\":{\"behavior\":\"3\",\"hist\":\"8140\",\"site\":\"C349\"},\"method\":\"POST\",\"url\":\"https://api.seer.cancer.gov/rest/staging/eod_public/3.3/schemas/lookup\"}": {
+    "file": "response-fbf55d6b73b29433480d.json",
+    "status": 200
+  },
+  "{\"body\":{\"behavior\":\"3\",\"hist\":\"8140\",\"site\":\"C619\",\"year_dx\":\"2026\"},\"method\":\"POST\",\"url\":\"https://api.seer.cancer.gov/rest/staging/eod_public/3.3/schemas/lookup\"}": {
+    "file": "response-d5b18822b94886b0349e.json",
+    "status": 200
+  },
+  "{\"body\":{\"behavior\":\"3\",\"hist\":\"8500\",\"site\":\"C501\",\"year_dx\":\"2026\"},\"method\":\"POST\",\"url\":\"https://api.seer.cancer.gov/rest/staging/eod_public/3.3/schemas/lookup\"}": {
+    "file": "response-b77e3e85b24cb616160f.json",
+    "status": 200
+  },
+  "{\"body\":{\"behavior\":\"3\",\"hist\":\"8500\",\"site\":\"C504\",\"year_dx\":\"2026\"},\"method\":\"POST\",\"url\":\"https://api.seer.cancer.gov/rest/staging/eod_public/3.3/schemas/lookup\"}": {
+    "file": "response-e26271677c07cf0e2e2c.json",
+    "status": 200
+  },
+  "{\"body\":{\"behavior\":\"3\",\"hist\":\"9732\",\"site\":\"C421\",\"year_dx\":\"2026\"},\"method\":\"POST\",\"url\":\"https://api.seer.cancer.gov/rest/staging/eod_public/3.3/schemas/lookup\"}": {
+    "file": "response-61fcc605cdef805dfc42.json",
+    "status": 200
+  },
+  "{\"body\":{\"behavior\":\"3\",\"hist\":\"9999\",\"site\":\"C421\",\"year_dx\":\"2026\"},\"method\":\"POST\",\"url\":\"https://api.seer.cancer.gov/rest/staging/eod_public/3.3/schemas/lookup\"}": {
+    "file": "response-7a6195b9dfdf0a6873ef.json",
+    "status": 200
+  },
+  "{\"body\":{\"hist\":\"8500\",\"site\":\"C504\",\"year_dx\":\"2026\"},\"method\":\"POST\",\"url\":\"https://api.seer.cancer.gov/rest/staging/eod_public/3.3/schemas/lookup\"}": {
+    "file": "response-bc5fe727ec5297db3e90.json",
+    "status": 200
+  },
+  "{\"body\":{\"input1\":{\"behavior_icd_o3\":\"3\",\"date_of_diagnosis_year\":\"2026\",\"histology_icd_o3\":\"8500\",\"laterality\":\"2\",\"primary_site\":\"C504\"},\"input2\":{\"behavior_icd_o3\":\"3\",\"date_of_diagnosis_year\":\"2026\",\"histology_icd_o3\":\"8500\",\"laterality\":\"1\",\"primary_site\":\"C501\"}},\"method\":\"POST\",\"url\":\"https://api.seer.cancer.gov/rest/mph\"}": {
+    "file": "response-ef41a52362e37ec00c47.json",
+    "status": 200
+  }
+}

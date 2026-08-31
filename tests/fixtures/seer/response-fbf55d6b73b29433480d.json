@@ -1,0 +1,32 @@
+[
+  {
+    "discriminators": [
+      {
+        "key": "year_dx",
+        "naaccr_item": 390,
+        "naaccr_xml_id": "dateOfDiagnosis",
+        "name": "Year of Diagnosis",
+        "table": "year_dx_validation",
+        "used_for_staging": true
+      }
+    ],
+    "id": "lung",
+    "name": "Lung [8th: 2018-2024]",
+    "title": "Lung [8th: 2018-2024]"
+  },
+  {
+    "discriminators": [
+      {
+        "key": "year_dx",
+        "naaccr_item": 390,
+        "naaccr_xml_id": "dateOfDiagnosis",
+        "name": "Year of Diagnosis",
+        "table": "year_dx_validation",
+        "used_for_staging": true
+      }
+    ],
+    "id": "lung_v9_2025",
+    "name": "Lung [V9: 2025+]",
+    "title": "Lung [V9: 2025+]"
+  }
+]

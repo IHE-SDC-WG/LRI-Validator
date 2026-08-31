@@ -18,19 +18,23 @@ def test_html_build_is_deterministic_and_self_contained() -> None:
     text = output.read_text()
     assert "/*__DATA__*/" not in text
     assert "/*__VALIDATOR__*/" not in text
+    assert "/*__CONTENT__*/" not in text
     assert "/*__APP__*/" not in text
-    assert "http://" not in text and "https://" not in text
-    assert "fetch(" not in text and "XMLHttpRequest" not in text
+    assert "http://" not in text
+    assert text.count("https://") == text.count("https://api.seer.cancer.gov/") >= 1
+    assert text.count("fetch(") == 1 and "XMLHttpRequest" not in text
     assert "localStorage" not in text and "sessionStorage" not in text
     assert "Content-Security-Policy" not in text
     assert "window.onerror" in text
     assert "window.atob" not in text
     assert "JSON.parse" not in text
     assert 'type="application/json"' not in text
+    assert "api.seer.cancer.gov" in text
 
 
 def test_javascript_syntax() -> None:
     subprocess.run(["node", "--check", "web/validator.js"], cwd=ROOT, check=True)
+    subprocess.run(["node", "--check", "web/content.js"], cwd=ROOT, check=True)
     subprocess.run(["node", "--check", "web/app.js"], cwd=ROOT, check=True)
 
 

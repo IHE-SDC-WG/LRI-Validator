@@ -4,7 +4,7 @@ PV1|1|O
 ORC|RE||FILL0001^SYNLAB^2.16.840.1.113883.19.77^ISO|||||||||PRV001^Lin^Morgan^^^^^^LOCAL&2.16.840.1.113883.19.77&ISO|||||||||Synthetic Pathology Laboratory^L^^^^LOCAL&2.16.840.1.113883.19.77&ISO
 OBR|1||FILL0001^SYNLAB^2.16.840.1.113883.19.77^ISO|60568-3^Synoptic report^LN|||202608270900-0400|||||||||PRV001^Lin^Morgan^^^^^^LOCAL&2.16.840.1.113883.19.77&ISO|||||4165550101|202608271200-0400|||F|||||||PRV001&Lin&Morgan&&&&&&&2.16.840.1.113883.19.77&ISO
 OBX|1|TX|60573-3^Report template source^LN||CAP Synoptic Summary||||||F
-OBX|2|TX|60572-5^Report template ID^LN||Synthetic Resection Template||||||F
+OBX|2|TX|60572-5^Report template ID^LN||Breast Invasive Resection||||||F
 OBX|3|TX|60574-1^Report template version ID^LN||1.0.0||||||F
-OBX|4|TX|60568-3^Path report.synoptic summary^LN||Procedure: Synthetic excision\.br\Diagnosis: Synthetic carcinoma||||||F
-SPM|1|^SPEC0001&SYNLAB&2.16.840.1.113883.19.77&ISO||TISS^Tissue specimen^HL70487|||||||||||||202608270900-0400|202608271000-0400
+OBX|4|TX|60568-3^Path report.synoptic summary^LN||Primary Site: Upper-outer quadrant of breast (C50.4)\.br\Histologic Type: Invasive carcinoma (8500/3)\.br\Laterality: Left\.br\Histologic Grade: G2||||||F
+SPM|1|^SPEC0001&SYNLAB&2.16.840.1.113883.19.77&ISO||TISS^Breast tissue specimen^HL70487||||C50.4^Upper-outer quadrant of breast^ICD-O-3|7771000^Left^SCT||||||||202608270900-0400|202608271000-0400

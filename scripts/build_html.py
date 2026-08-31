@@ -30,11 +30,13 @@ def data_script(catalog: object, samples: dict[str, str]) -> str:
 def build() -> Path:
     template = (ROOT / "web" / "template.html").read_text(encoding="utf-8")
     validator = (ROOT / "web" / "validator.js").read_text(encoding="utf-8")
+    content = (ROOT / "web" / "content.js").read_text(encoding="utf-8")
     app = (ROOT / "web" / "app.js").read_text(encoding="utf-8")
     catalog = json.loads((ROOT / "src" / "lri_validator" / "catalog.json").read_text(encoding="utf-8"))
     samples = {path.stem: path.read_text(encoding="utf-8") for path in sorted((ROOT / "tests" / "fixtures" / "valid").glob("*.hl7"))}
     output = (template.replace("/*__DATA__*/", data_script(catalog, samples))
         .replace("/*__VALIDATOR__*/", validator)
+        .replace("/*__CONTENT__*/", content)
         .replace("/*__APP__*/", app))
     destination = ROOT / "dist" / "naaccr-lri-validator.html"
     destination.parent.mkdir(parents=True, exist_ok=True)

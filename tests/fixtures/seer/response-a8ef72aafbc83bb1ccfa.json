@@ -1,0 +1,326 @@
+{
+  "abstractor_note": [
+    {
+      "end": 2022,
+      "value": "The presence of multiple plasmacytomas is diagnostic of plasma cell myeloma. Code as C421 (bone marrow), 9732/3.\n\nNote: Code primary site as C421 even if the bone marrow is negative or the bone marrow was not assessed.\n\nPlasma cell myeloma (PCM) usually has generalized bone marrow involvement. Lytic bone lesions and bone tumor masses of plasma cells also occur. \n\nApproximately 30% of patients with solitary plasmacytoma (bone or outside of bone) defined only by radiographical skeletal survey have additional lesions identified on MRI or CT. These patients are considered to have plasma cell myeloma. \n\nThe International Staging System for Multiple Myeloma Staging for Multiple Myeloma is based on:\n1. Amount of monoclonal (or myeloma) protein (M protein) in the serum and/or urine\n2. Various clinical parameters such as: hemoglobin and serum calcium concentrations, number of lytic bone lesions\n3. Presence or absence of renal failure. \nStage I\nStage II\nStage III\n\nTreatment \nWatchful waiting: Asymptomatic patients with no lytic lesions and normal renal function. \n\nFor patients with symptoms and advanced disease\n1. Induction therapy\n2. Consolidation therapy\n3. Maintenance therapy\n4. Supportive care\n\nThe presence of a plasmacytoma and a diagnosis of plasma cell myeloma diagnosed during the initial clinical workup is evidence of advanced disease. One primary is abstracted, the plasma cell myeloma (See Rule M11)\n\nThe presence of a plasmacytoma after a diagnosis of plasma cell myeloma is evidence of advanced disease and not a new primary (See Rule M13)"
+    },
+    {
+      "start": 2023,
+      "value": "Plasma cell myeloma (PCM) is part of the Plasma cell neoplasms and other diseases with paraproteins lineage table in the WHO 5th edition of Hematolymphoid Tumors. (See Appendix B in the Hematopoietic Manual, Table B17)\n\nSerum protein electrophoresis (SPEP) can be used as a definitive diagnostic method in the absence of a bone marrow biopsy. Normally a positive SPEP is followed by a bone marrow biopsy. If a bone marrow biopsy is not done, or the tissue is insufficient from a bone marrow biopsy and the physician states the patient does have multiple myeloma based on the SPEP, diagnostic confirmation would be 5. \n\nMany times, a bone marrow biopsy report may state \"Plasma cell neoplasm consistent with plasma cell myeloma.\" This is a definitive statement of plasma cell myeloma. \n\nPathology reports may also simply state \"plasma cell neoplasm,\" without further confirmation. If the managing physician later diagnoses the patient with plasma cell myeloma based on clinical factors, this is reportable and diagnostic confirmation code would be 8; however, if the managing physician states, \"based on the pathology report,\" then it would be a diagnostic confirmation code of 1.  \n\nGeneralized or multifocal bone marrow involvement is typically present at diagnosis. Lytic bone lesions and focal tumoral masses of plasma cells also occur, most commonly in sites of active haematopoiesis. \n\nExtramedullary involvement in the form of soft tissue masses, diffuse organ infiltration, or circulating plasma cells is usually a manifestation of advanced disease, with a higher prevalence among patients with relapsed plasma cell myeloma / multiple myeloma (PCM/MM).\n\nThe presence of a plasmacytoma and a diagnosis of plasma cell myeloma diagnosed during the initial clinical workup is evidence of advanced disease. One primary is abstracted, the plasma cell myeloma (9732/3, C421). \n\nThe presence of a plasmacytoma after a diagnosis of plasma cell myeloma is evidence of advanced disease and is not a new primary.\n\nThe Revised International Staging System (R-ISS) for multiple myeloma, based on pretreatment serum B2M, albumin, and LDH levels, as well as on interphase FISH–based chromosomal abnormalities, provides a strong predictor of survival.\n- See the SSDI Manual, Plasma Cell Myeloma schema for more information on the R-ISS staging system)"
+    }
+  ],
+  "alternate_name": [
+    {
+      "value": "Early/evolving plasma cell (multiple) myeloma"
+    },
+    {
+      "value": "Multiple myeloma"
+    },
+    {
+      "value": "Multiple plasmacytomas (occurring in bone or outside of bone)"
+    },
+    {
+      "value": "Myeloma, NOS"
+    },
+    {
+      "value": "Myelomatosis"
+    },
+    {
+      "value": "Non-secretory myeloma"
+    },
+    {
+      "value": "Plasma cell leukemia (PCL) (primary, secondary, NOS) (see 9733/3 prior to 2010)"
+    },
+    {
+      "value": "Plasmacytic leukemia (see 9733/3 prior to 2010)"
+    },
+    {
+      "value": "Smoldering (asymptomatic) myeloma"
+    }
+  ],
+  "definition": [
+    {
+      "end": 2022,
+      "value": "Plasma cell myeloma (PCM) is a bone marrow-based, multifocal neoplastic proliferation of plasma cells, usually associated with an M protein in serum and/or urine and evidence of organ damage related the plasma cell neoplasm. \n\nBone marrow is the site of origin of nearly all PCMs, and in most cases there is disseminated bone marrow involvement. Other organs may be secondarily involved. The disease spans a clinical spectrum from asymptomatic to highly aggressive. Diagnosis is based on a combination of clinical, morphological, immunological, and radiological features.\n\nThere are three clinical variants of plasma cell myeloma, all of which are coded to 9732/3.\n\n1. Smoldering (asymptomatic) PCM: Bone marrow involvement, but no related organ or tissue impairment. Similar to MGUS in its lack of symptoms, but more likely to develop to symptomatic PCM. About 8% of patients are initially asymptomatic. \n\n2. Non-secretory myeloma occurs when there is absence of an M protein on immunofixation electrophoresis; there is impaired (or not) secretion of immunoglobulin into the blood or urine. A bout 3% of PCM cases are non-secretory. \n\n3. Plasma cell leukemia (PCL) occurs when the number of plasma cells in the peripheral blood is 20% of the leukocyte differential count. Other areas of involvement include spleen, liver, pleural effusions, ascites, and cerebrospinal fluid. PCL may be present at diagnosis or occur as a late feature of PCM (secondary PCL); 2-5% of myeloma cases are primary PCL. Clinical features overall are similar to PCM. Lymphadenopathy, organomegaly and renal failure are often present in PCL. PCL is an aggressive disease with short survival.\n\n4. High-risk multiple myeloma: Having at least one of the mutations related with poor prognosis including; t(4;14) t(14;16), t(14;20), del 17p, p53 mutation, gain 1q and del 1p.\n\n5. Double-hit multiple myeloma: Having at least two of the mutations related with poor prognosis including; t(4;14) t(14;16), t(14;20), del 17p, p53 mutation, gain 1q and del 1p.\n\n6. Triple-hit multiple myeloma: Having at least three of the mutations related with poor prognosis including; t(4;14) t(14;16), t(14;20), del 17p, p53 mutation, gain 1q and del 1p."
+    },
+    {
+      "start": 2023,
+      "value": "Plasma cell myeloma is a bone marrow-based, multifocal neoplastic proliferation of plasma cells. Multiple myeloma is defined by the combination of plasma cell myeloma, usually associated with a serum and/or urine monoclonal immunoglobulin (Ig), and either evidence of organ damage related to the disease, or in the absence of organ damage, laboratory or imaging findings that suggest a high risk of developing end-organ damage within 2 years. (WHO 5th edition)"
+    }
+  ],
+  "diagnosis_method": [
+    {
+      "start": 2010,
+      "value": "Clinical diagnosis"
+    },
+    {
+      "start": 2010,
+      "value": "Cytogenetics"
+    },
+    {
+      "start": 2010,
+      "value": "Genetic testing"
+    },
+    {
+      "start": 2010,
+      "value": "Histologic confirmation"
+    },
+    {
+      "start": 2010,
+      "value": "Immunohistochemistry"
+    },
+    {
+      "start": 2010,
+      "value": "Immunophenotyping"
+    }
+  ],
+  "diagnostic_confirmation": [
+    {
+      "value": "This histology can be determined by positive histology (including peripheral blood) with or without genetics and/or immunophenotyping. Review the Definitive Diagnostic Methods, Immunophenotyping and Genetics Data sections below, and the instructions in the Hematopoietic Manual for further guidance on assigning Diagnostic confirmation."
+    }
+  ],
+  "exams": [
+    {
+      "value": "Blood and urine immunoglobulin studies"
+    },
+    {
+      "value": "Blood chemistry studies"
+    },
+    {
+      "value": "Bone marrow aspiration and biopsy"
+    },
+    {
+      "value": "Complete blood count (CBC)"
+    },
+    {
+      "value": "Cytogenetic analysis"
+    },
+    {
+      "value": "Highly sensitive imaging (CT, PET-CT, MRI)"
+    },
+    {
+      "value": "Physical exam and history (H&P)"
+    },
+    {
+      "value": "Serum and urine protein electrophoresis and immunofixation"
+    },
+    {
+      "value": "Skeletal survey"
+    },
+    {
+      "value": "Twenty-four-hour urine test"
+    }
+  ],
+  "fingerprint": "6a22ba5ac1cd093bb645db7e",
+  "first_published": "2013-07-29T20:24:12.546Z",
+  "genetics": [
+    {
+      "start": 2010,
+      "value": "Five major oncogenes involved in 14q32 translocation: cyclin D1, C-MAF, FGFR3/MMSET, cyclin D3, and MAFB"
+    },
+    {
+      "start": 2010,
+      "value": "High load of IGHV gene somatic hypermutation"
+    },
+    {
+      "start": 2010,
+      "value": "Immunoglobulin heavy and light chain genes are clonally rearranged"
+    },
+    {
+      "start": 2010,
+      "value": "Trisomies"
+    },
+    {
+      "start": 2010,
+      "value": "Whole or partial chromosome deletions or translocations"
+    }
+  ],
+  "grade": [
+    {
+      "end": 2017,
+      "value": 6
+    }
+  ],
+  "icdO1_effective": {
+    "end": 1991,
+    "start": 1978
+  },
+  "icdO1_morphology": [
+    "9732/3"
+  ],
+  "icdO2_effective": {
+    "end": 2000,
+    "start": 1992
+  },
+  "icdO2_morphology": [
+    "9732/3"
+  ],
+  "icdO3_effective": {
+    "start": 2001
+  },
+  "icdO3_morphology": "9732/3",
+  "icd_10_code": [
+    "C90.0 Multiple myeloma"
+  ],
+  "icd_10cm_code": [
+    {
+      "value": "C90.0 Multiple Myeloma"
+    }
+  ],
+  "icd_9_code": [
+    "203.0 Multiple myeloma"
+  ],
+  "id": "51f6cf5ae3e27c3994bd54aa",
+  "immunophenotype": [
+    {
+      "start": 2010,
+      "value": "CD38+ (expression/positive)"
+    },
+    {
+      "start": 2010,
+      "value": "CD56- (no expression/negative)"
+    },
+    {
+      "start": 2010,
+      "value": "CD138+ (expression/positive)"
+    },
+    {
+      "value": "CD229+ (expression/positive)"
+    },
+    {
+      "value": "CD319+ (expression/positive)"
+    }
+  ],
+  "last_modified": "2026-06-05T12:00:26.810Z",
+  "mortality": [
+    {
+      "value": "Age: 70 years median age (rare in children and adults less than 30)"
+    },
+    {
+      "value": "Incidence: 10-15% of hematopoietic malignancies"
+    },
+    {
+      "value": "Mortality: 20% of deaths from hematopoietic malignancies"
+    },
+    {
+      "value": "Race: Occurs in african americans twice as much as caucasians"
+    },
+    {
+      "value": "Sex: male predominance"
+    },
+    {
+      "value": "Survival: Stage I: 62 months median survival; Stage II: 44 months median survival; Stage III: 29 months median survival"
+    }
+  ],
+  "name": "Plasma cell myeloma (PCM)",
+  "primary_site": [
+    {
+      "high": "C421",
+      "low": "C421"
+    }
+  ],
+  "primary_site_text": "Primary site must be bone marrow (C421)\n\nThe involvement of multiple plasmacytomas (2 or more, 9731 and/or 9734) WITH or WITHOUT bone marrow involvement, is coded as Plasma Cell Myeloma (9732/3, C421)",
+  "progression": [
+    {
+      "value": "Extramedullary involvement usually indicates advanced disease"
+    }
+  ],
+  "reportable": [
+    {
+      "start": 1978
+    }
+  ],
+  "same_primary": [
+    {
+      "end": 2009,
+      "start": 2001,
+      "value": "51f6cf57e3e27c3994bd5339"
+    },
+    {
+      "end": 2009,
+      "start": 2001,
+      "value": "51f6cf5ae3e27c3994bd54ad"
+    },
+    {
+      "start": 2001,
+      "value": "51f6cf5ae3e27c3994bd5492"
+    },
+    {
+      "end": 2009,
+      "start": 2001,
+      "value": "51f6cf59e3e27c3994bd548c"
+    }
+  ],
+  "signs": [
+    {
+      "value": "Anemia"
+    },
+    {
+      "value": "Bence-Jones protein accumulation in the renal tubules causing renal damage"
+    },
+    {
+      "value": "Bone pain"
+    },
+    {
+      "value": "End-organ damage"
+    },
+    {
+      "value": "Hypercalcemia"
+    },
+    {
+      "value": "Pathological fractures"
+    },
+    {
+      "value": "Serum monoclonal protein"
+    },
+    {
+      "value": "Skeletal destruction with osteolytic lesions"
+    }
+  ],
+  "source": [
+    {
+      "name": "WHO Classification of Tumours Editorial Board. Haematolymphoid tumours. Lyon (France): International Agency for Research on Cancer; 2024. (WHO classification of tumours series, 5th ed.; vol. 11). https://publications.iarc.who.int/637.",
+      "pages": "Part B: 625-630",
+      "section": "Plasma cell neoplasms and other diseases with paraproteins"
+    },
+    {
+      "name": "International Classification of Diseases for Oncology, 3rd edition (including revisions). Geneva: World Health Organization, 2001, 2011, 2020.",
+      "pages": "http://www.iacr.com.fr/index.php?option=com_content&view=category&layout=blog&id=100&Itemid=577",
+      "section": "ICD-O-3.2 (2020) Morphological Codes"
+    },
+    {
+      "name": "PDQ® Adult Treatment Editorial Board. PDQ Plasma Cell Neoplasms (Including Multiple Myeloma) Treatment. Bethesda, MD: National Cancer Institute. Updated <03/28/2025>. Available at: https://www.cancer.gov/types/myeloma/hp/myeloma-treatment-pdq. Accessed <03/30/2025>. [PMID: 26389362]",
+      "pages": "https://www.cancer.gov/types/myeloma/hp/myeloma-treatment-pdq",
+      "section": "Plasma Cell Neoplasms (Including Multiple Myeloma) Treatment (PDQ®)–Health Professional Version"
+    }
+  ],
+  "transform_from": [
+    {
+      "start": 2010,
+      "value": "51f6cf5ae3e27c3994bd54ad"
+    },
+    {
+      "start": 2010,
+      "value": "51f6cf59e3e27c3994bd548c"
+    }
+  ],
+  "treatment": [
+    {
+      "value": "Chemotherapy"
+    },
+    {
+      "value": "Hematologic Transplant and/or Endocrine Procedures"
+    },
+    {
+      "value": "Hormone therapy"
+    },
+    {
+      "value": "Immunotherapy"
+    }
+  ],
+  "type": "HEMATO",
+  "valid": {
+    "start": 2001
+  },
+  "version": "latest"
+}

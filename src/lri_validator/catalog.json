@@ -40,6 +40,66 @@
     "CAP eCP validation covers message structure and identifier, repeat, and parent-link syntax; it does not verify identifiers against CAP-controlled artifacts.",
     "This draft-based validator is not a certification service and does not perform context-based or transport testing."
   ],
+  "content": {
+    "schema_version": "1.0.0",
+    "content_ruleset_version": "SEER-EOD-3.3-NAACCR-26-v1",
+    "seer_base_url": "https://api.seer.cancer.gov/rest/",
+    "attribution": "Registry content checks use the SEER API provided by the Surveillance, Epidemiology, and End Results Program, National Cancer Institute.",
+    "algorithm_by_year": [
+      {"from_year": 2018, "algorithm": "eod_public", "version": "3.3"},
+      {"from_year": 2016, "algorithm": "tnm", "version": "2.1"},
+      {"from_year": 2004, "algorithm": "cs", "version": "02.05.50"}
+    ],
+    "naaccr_version": "26",
+    "disease_version": "latest",
+    "site_recode_algorithm": "seer",
+    "heme_histology_min": 9590,
+    "max_api_calls": 40,
+    "cache_ttl_seconds": 604800,
+    "outbound_fields": ["site", "hist", "behavior", "laterality", "grade", "year", "algorithm", "version", "schema", "table", "NAACCR item", "disease id"],
+    "icdo_system_aliases": ["ICD-O", "ICD-O-3", "ICDO", "ICDO3", "ICD-O-3.2"],
+    "labels": {
+      "site": ["primary site", "tumor site", "topography", "site"],
+      "histology": ["histologic type", "histology", "morphology"],
+      "behavior": ["behavior", "behaviour"],
+      "laterality": ["laterality", "side"],
+      "grade": ["histologic grade", "histological grade", "nottingham grade", "grade"]
+    },
+    "laterality_words": {
+      "right": "1",
+      "left": "2",
+      "unilateral, side unspecified": "3",
+      "bilateral": "4",
+      "midline": "5",
+      "unknown": "9",
+      "not applicable": "0"
+    },
+    "laterality_snomed": {
+      "24028007": "1",
+      "7771000": "2",
+      "51440002": "4"
+    },
+    "naaccr_items": {"laterality": "410", "grade": "440"},
+    "templates": [
+      {"key": "breast", "patterns": ["breast"], "site_prefixes": ["C50"], "expected_schema_ids": ["breast"], "expected_recode_codes": ["26000"]},
+      {"key": "prostate", "patterns": ["prostate"], "site_prefixes": ["C61"], "expected_schema_ids": ["prostate"], "expected_recode_codes": ["28010"]},
+      {"key": "lung", "patterns": ["lung"], "site_prefixes": ["C34"], "expected_schema_ids": ["lung", "lung_v9_2025"], "expected_recode_codes": ["22030"]},
+      {"key": "colorectal", "patterns": ["colorectal", "colon", "rectal", "rectum"], "site_prefixes": ["C18", "C19", "C20"], "expected_schema_ids": ["colon_rectum"], "expected_recode_codes": []},
+      {"key": "melanoma", "patterns": ["melanoma"], "site_prefixes": [], "expected_schema_ids": [], "expected_recode_codes": []},
+      {"key": "thyroid", "patterns": ["thyroid"], "site_prefixes": ["C73"], "expected_schema_ids": ["thyroid"], "expected_recode_codes": ["32010"]},
+      {"key": "bladder", "patterns": ["bladder"], "site_prefixes": ["C67"], "expected_schema_ids": ["bladder"], "expected_recode_codes": ["29010"]},
+      {"key": "kidney", "patterns": ["kidney", "renal"], "site_prefixes": ["C64", "C65"], "expected_schema_ids": ["kidney_parenchyma", "renal_pelvis"], "expected_recode_codes": ["29020", "29030"]},
+      {"key": "endometrium", "patterns": ["endometrium", "endometrial", "uterine corpus"], "site_prefixes": ["C54"], "expected_schema_ids": ["corpus_carcinoma", "corpus_sarcoma", "corpus_adenosarcoma"], "expected_recode_codes": ["27020"]},
+      {"key": "hematopoietic", "patterns": ["hematopoietic", "lymphoid", "lymphoma", "leukemia", "myeloma"], "site_prefixes": [], "expected_schema_ids": [], "expected_recode_codes": []}
+    ],
+    "coverage_notices": [
+      "The optional check sends only the codes and reference identifiers listed before each run; it never sends the full message or direct identifiers.",
+      "The transmitted codes are sensitive coded clinical metadata. SEER and network operators can also observe the API account and source IP address.",
+      "Results are pinned to EOD 3.3, TNM 2.1, CS 02.05.50, and NAACCR 26; the SEER disease database and site-recode service are not version-pinned by the API.",
+      "Narrative extraction is conservative. Conflicting or unrecognized values are skipped instead of guessed.",
+      "Schema input checks cover only extracted fields with a published SEER value table. They do not perform complete cancer staging."
+    ]
+  },
   "rules": {
     "INPUT-001": {"severity": "error", "expected": "Provide one ER7 message without FHS/BHS wrappers.", "section": "9 Messages"},
     "ER7-001": {"severity": "error", "expected": "Use syntactically parseable HL7 ER7.", "section": "9.1 ORU^R01^ORU_R01"},
@@ -81,6 +141,21 @@
     "LRI-NAACCR-06": {"severity": "error", "expected": "HD_04.2 is a valid NPI when HD_04.3 is NPI.", "section": "11 HD_04"},
     "LRI-NAACCR-07": {"severity": "error", "expected": "HD_04.2 starts with a 2-4 letter state/province prefix when HD_04.3 is MD.", "section": "11 HD_04"},
     "LRI-NAACCR-08": {"severity": "error", "expected": "HD_04.2 is an ISO OID when HD_04.3 is ISO.", "section": "11 HD_04"},
-    "SPM9-001": {"severity": "error", "expected": "When SPM-9 uses SCT, use a laterality code enumerated in the draft.", "section": "12.2 SPM-9"}
+    "SPM9-001": {"severity": "error", "expected": "When SPM-9 uses SCT, use a laterality code enumerated in the draft.", "section": "12.2 SPM-9"},
+    "CONTENT-EXTRACT-01": {"severity": "information", "expected": "Resolve conflicting content candidates before registry checks are run for that field.", "section": "Local content extraction"},
+    "CONTENT-SITE-01": {"severity": "warning", "expected": "Use a primary-site code consistent with the recognized report template family.", "section": "Local template and site check"},
+    "CONTENT-COMBO-01": {"severity": "error", "expected": "Use a site and histology combination recognized by the pinned SEER staging algorithm.", "section": "SEER staging schema lookup"},
+    "CONTENT-COMBO-02": {"severity": "information", "expected": "Supply the applicable discriminator before schema-specific field checks are interpreted.", "section": "SEER staging schema lookup"},
+    "CONTENT-COMBO-03": {"severity": "warning", "expected": "Use a staging schema consistent with the recognized report template family.", "section": "SEER staging schema lookup"},
+    "CONTENT-FIELD-01": {"severity": "error", "expected": "Use a behavior value present in the selected schema's published input table.", "section": "SEER staging schema and table"},
+    "CONTENT-FIELD-02": {"severity": "information", "expected": "Provide staging inputs that the selected schema uses and does not default when those values are available in the report.", "section": "SEER staging schema"},
+    "CONTENT-FIELD-03": {"severity": "warning", "expected": "Use a grade value present in the selected schema's published grade table.", "section": "SEER staging schema and table"},
+    "CONTENT-HEME-01": {"severity": "error", "expected": "Use a hematopoietic morphology recognized by the SEER disease database.", "section": "SEER disease database"},
+    "CONTENT-HEME-02": {"severity": "warning", "expected": "Use the morphology only within the validity years published by the SEER disease database.", "section": "SEER disease database"},
+    "CONTENT-RECODE-01": {"severity": "information", "expected": "Review the SEER site-recode group as registry context.", "section": "SEER site recode"},
+    "CONTENT-RECODE-02": {"severity": "warning", "expected": "Use a site-recode group consistent with the recognized report template family.", "section": "SEER site recode"},
+    "CONTENT-DICT-01": {"severity": "warning", "expected": "Use a code present in the pinned NAACCR item's published allowed-code list.", "section": "SEER NAACCR data dictionary"},
+    "CONTENT-MPH-01": {"severity": "information", "expected": "Review the SEER multiple-primary result for each extractable order-group pair.", "section": "SEER multiple-primary rules"},
+    "CONTENT-API-01": {"severity": "information", "expected": "Retry with a usable SEER API key and network connection; local checks remain available.", "section": "SEER API availability"}
   }
 }

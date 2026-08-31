@@ -1,0 +1,81 @@
+[
+  {
+    "name": "invalid-combo",
+    "base": "valid/breast-synoptic-summary.hl7",
+    "operations": [
+      {"kind": "replace", "old": "C50.4", "new": "C99.9"},
+      {"kind": "replace", "old": "8500/3", "new": "1234/3"}
+    ]
+  },
+  {
+    "name": "bad-laterality",
+    "base": "valid/breast-synoptic-summary.hl7",
+    "operations": [
+      {"kind": "replace", "old": "Laterality: Left", "new": "Laterality: 8"},
+      {"kind": "replace", "old": "7771000^Left^SCT", "new": "8^8^NAACCR"}
+    ]
+  },
+  {
+    "name": "bad-behavior",
+    "base": "valid/breast-synoptic-summary.hl7",
+    "operations": [
+      {"kind": "replace", "old": "8500/3", "new": "8500/8"}
+    ]
+  },
+  {
+    "name": "bad-grade",
+    "base": "valid/breast-synoptic-summary.hl7",
+    "operations": [
+      {"kind": "replace", "old": "Histologic Grade: G2", "new": "Histologic Grade: 8"}
+    ]
+  },
+  {
+    "name": "template-mismatch",
+    "base": "valid/breast-synoptic-summary.hl7",
+    "operations": [
+      {"kind": "replace", "old": "Breast Invasive Resection", "new": "Prostate Resection"}
+    ]
+  },
+  {
+    "name": "missing-behavior",
+    "base": "valid/breast-synoptic-summary.hl7",
+    "operations": [
+      {"kind": "replace", "old": "8500/3", "new": "8500"}
+    ]
+  },
+  {
+    "name": "unknown-heme",
+    "base": "content/heme-narrative.hl7",
+    "operations": [
+      {"kind": "replace", "old": "9732/3", "new": "9999/3"}
+    ]
+  },
+  {
+    "name": "heme-year-invalid",
+    "base": "content/heme-narrative.hl7",
+    "operations": [
+      {"kind": "replace", "old": "Primary Site: Bone marrow (C42.1)", "new": "Specimen: Bone marrow"},
+      {"kind": "replace", "old": "|202608270900-0400|202608271000-0400", "new": "|199908270900-0400|199908271000-0400"}
+    ]
+  },
+  {
+    "name": "ambiguous-site",
+    "base": "valid/breast-synoptic-summary.hl7",
+    "operations": [
+      {
+        "kind": "replace",
+        "old": "Histologic Type: Invasive carcinoma",
+        "new": "Primary Site: Prostate (C61.9); Histologic Type: Invasive carcinoma"
+      }
+    ]
+  },
+  {
+    "name": "no-extractable-site",
+    "base": "valid/breast-synoptic-summary.hl7",
+    "operations": [
+      {"kind": "replace", "old": "Primary Site: Upper-outer quadrant of breast (C50.4)", "new": "Specimen: Breast"},
+      {"kind": "replace", "old": "Histologic Type: Invasive carcinoma (8500/3)", "new": "Diagnosis: Invasive carcinoma"},
+      {"kind": "set_field", "segment": "SPM", "field": 8, "value": ""}
+    ]
+  }
+]

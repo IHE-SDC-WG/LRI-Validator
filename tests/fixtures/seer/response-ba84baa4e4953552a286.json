@@ -1,0 +1,544 @@
+{
+  "algorithm": "eod_public",
+  "id": "plasma_cell_myeloma",
+  "inputs": [
+    {
+      "key": "year_dx",
+      "naaccr_item": 390,
+      "naaccr_xml_id": "dateOfDiagnosis",
+      "name": "Year of Diagnosis",
+      "table": "year_dx_validation",
+      "used_for_staging": false
+    },
+    {
+      "key": "site",
+      "naaccr_item": 400,
+      "naaccr_xml_id": "primarySite",
+      "name": "Primary Site",
+      "table": "primary_site",
+      "used_for_staging": true
+    },
+    {
+      "key": "hist",
+      "naaccr_item": 522,
+      "naaccr_xml_id": "histologicTypeIcdO3",
+      "name": "Histology",
+      "table": "histology",
+      "used_for_staging": true
+    },
+    {
+      "key": "behavior",
+      "naaccr_item": 523,
+      "naaccr_xml_id": "behaviorCodeIcdO3",
+      "name": "Behavior",
+      "table": "behavior",
+      "used_for_staging": true
+    },
+    {
+      "default": "0",
+      "key": "discriminator_1",
+      "metadata": [
+        {
+          "name": "COC_REQUIRED"
+        },
+        {
+          "name": "NPCR_REQUIRED"
+        },
+        {
+          "name": "SSDI"
+        },
+        {
+          "name": "CCCR_REQUIRED"
+        },
+        {
+          "name": "SEER_REQUIRED"
+        }
+      ],
+      "naaccr_item": 3926,
+      "naaccr_xml_id": "schemaDiscriminator1",
+      "name": "Schema Discriminator 1",
+      "table": "multiple_myeloma_terminology_20875",
+      "used_for_staging": false
+    },
+    {
+      "key": "reporting_source",
+      "naaccr_item": 500,
+      "naaccr_xml_id": "typeOfReportingSource",
+      "name": "Type of Reporting Source",
+      "table": "type_of_reporting_source_76696",
+      "used_for_staging": false
+    },
+    {
+      "default": "999",
+      "key": "size_clin",
+      "naaccr_item": 752,
+      "naaccr_xml_id": "tumorSizeClinical",
+      "name": "Tumor Size Clinical",
+      "table": "tumor_size_clinical_dna_64119",
+      "used_for_staging": false
+    },
+    {
+      "default": "999",
+      "key": "size_path",
+      "naaccr_item": 754,
+      "naaccr_xml_id": "tumorSizePathologic",
+      "name": "Tumor Size Pathological",
+      "table": "tumor_size_pathological_dna_6742",
+      "used_for_staging": false
+    },
+    {
+      "default": "999",
+      "key": "size_summary",
+      "naaccr_item": 756,
+      "naaccr_xml_id": "tumorSizeSummary",
+      "name": "Tumor Size Summary",
+      "table": "tumor_size_summary_dna_13275",
+      "used_for_staging": false
+    },
+    {
+      "default": "99",
+      "key": "nodes_pos",
+      "naaccr_item": 820,
+      "naaccr_xml_id": "regionalNodesPositive",
+      "name": "Regional Nodes Positive",
+      "table": "nodes_pos_dna_91511",
+      "used_for_staging": false
+    },
+    {
+      "default": "99",
+      "key": "nodes_exam",
+      "naaccr_item": 830,
+      "naaccr_xml_id": "regionalNodesExamined",
+      "name": "Regional Nodes Examined",
+      "table": "nodes_exam_dna_95635",
+      "used_for_staging": false
+    },
+    {
+      "default": "0",
+      "key": "neoadjuvant_therapy",
+      "metadata": [
+        {
+          "name": "SEER_REQUIRED",
+          "start": 2021
+        }
+      ],
+      "naaccr_item": 1632,
+      "naaccr_xml_id": "neoadjuvantTherapy",
+      "name": "Neoadjuvant Therapy",
+      "table": "neoadjuvant_therapy_37302",
+      "used_for_staging": false
+    },
+    {
+      "default": "0",
+      "key": "neoadj_tx_clinical_response",
+      "metadata": [
+        {
+          "name": "SEER_REQUIRED",
+          "start": 2021
+        }
+      ],
+      "naaccr_item": 1633,
+      "naaccr_xml_id": "neoadjuvTherapyClinicalResponse",
+      "name": "Neoadjuvant Therapy – Clinical Response",
+      "table": "neoadj_tx_clinical_response_31723",
+      "used_for_staging": false
+    },
+    {
+      "default": "0",
+      "key": "neoadj_tx_treatment_effect",
+      "metadata": [
+        {
+          "name": "SEER_REQUIRED",
+          "start": 2021
+        }
+      ],
+      "naaccr_item": 1634,
+      "naaccr_xml_id": "neoadjuvTherapyTreatmentEffect",
+      "name": "Neoadjuvant Therapy – Treatment Effect",
+      "table": "neoadj_tx_treatment_effect_52725",
+      "used_for_staging": false
+    },
+    {
+      "default": "999",
+      "key": "eod_primary_tumor",
+      "naaccr_item": 772,
+      "naaccr_xml_id": "eodPrimaryTumor",
+      "name": "EOD Primary Tumor",
+      "table": "extension_bgc",
+      "used_for_staging": true
+    },
+    {
+      "default": "888",
+      "key": "eod_regional_nodes",
+      "naaccr_item": 774,
+      "naaccr_xml_id": "eodRegionalNodes",
+      "name": "EOD Regional Nodes",
+      "table": "nodes_dna",
+      "used_for_staging": true
+    },
+    {
+      "default": "88",
+      "key": "eod_mets",
+      "naaccr_item": 776,
+      "naaccr_xml_id": "eodMets",
+      "name": "EOD Mets",
+      "table": "mets_hna",
+      "used_for_staging": true
+    },
+    {
+      "key": "ss2018",
+      "naaccr_item": 764,
+      "naaccr_xml_id": "summaryStage2018",
+      "name": "SS2018",
+      "table": "ss2018_44993",
+      "used_for_staging": false
+    },
+    {
+      "default": "8",
+      "key": "grade_clin",
+      "metadata": [
+        {
+          "name": "NPCR_REQUIRED"
+        },
+        {
+          "name": "COC_REQUIRED"
+        },
+        {
+          "name": "SSDI"
+        },
+        {
+          "name": "CCCR_REQUIRED"
+        },
+        {
+          "name": "SEER_REQUIRED"
+        }
+      ],
+      "naaccr_item": 3843,
+      "naaccr_xml_id": "gradeClinical",
+      "name": "Grade Clinical",
+      "table": "grade_clinical_18316",
+      "used_for_staging": true
+    },
+    {
+      "default": "8",
+      "key": "grade_path",
+      "metadata": [
+        {
+          "name": "NPCR_REQUIRED"
+        },
+        {
+          "name": "COC_REQUIRED"
+        },
+        {
+          "name": "SSDI"
+        },
+        {
+          "name": "CCCR_REQUIRED"
+        },
+        {
+          "name": "SEER_REQUIRED"
+        }
+      ],
+      "naaccr_item": 3844,
+      "naaccr_xml_id": "gradePathological",
+      "name": "Grade Pathological",
+      "table": "grade_pathological_73388",
+      "used_for_staging": true
+    },
+    {
+      "key": "grade_post_therapy_clin",
+      "metadata": [
+        {
+          "name": "NPCR_REQUIRED"
+        },
+        {
+          "name": "COC_REQUIRED"
+        },
+        {
+          "name": "SSDI"
+        },
+        {
+          "name": "SEER_REQUIRED"
+        }
+      ],
+      "naaccr_item": 1068,
+      "naaccr_xml_id": "gradePostTherapyClin",
+      "name": "Grade Post Therapy Clin (yc)",
+      "table": "grade_post_therapy_clin_74830",
+      "used_for_staging": false
+    },
+    {
+      "key": "grade_post_therapy_path",
+      "metadata": [
+        {
+          "name": "NPCR_REQUIRED"
+        },
+        {
+          "name": "COC_REQUIRED"
+        },
+        {
+          "name": "SSDI"
+        },
+        {
+          "name": "CCCR_REQUIRED"
+        },
+        {
+          "name": "SEER_REQUIRED"
+        }
+      ],
+      "naaccr_item": 3845,
+      "naaccr_xml_id": "gradePostTherapy",
+      "name": "Grade Post Therapy Path (yp)",
+      "table": "grade_post_therapy_path_65729",
+      "used_for_staging": false
+    },
+    {
+      "default": "9",
+      "key": "b2_microglob_pretx_level",
+      "metadata": [
+        {
+          "name": "COC_REQUIRED"
+        },
+        {
+          "name": "SSDI"
+        },
+        {
+          "name": "CCCR_REQUIRED"
+        },
+        {
+          "name": "SEER_REQUIRED"
+        }
+      ],
+      "naaccr_item": 3931,
+      "naaccr_xml_id": "serumBeta2MicroglobulinPretxLvl",
+      "name": "Serum Beta-2 Microglobulin Pretreatment Level",
+      "table": "b2_microglob_pretx_level_83264",
+      "used_for_staging": false
+    },
+    {
+      "default": "9",
+      "key": "serum_alb_pretx_level",
+      "metadata": [
+        {
+          "name": "COC_REQUIRED"
+        },
+        {
+          "name": "SSDI"
+        },
+        {
+          "name": "CCCR_REQUIRED"
+        },
+        {
+          "name": "SEER_REQUIRED"
+        }
+      ],
+      "naaccr_item": 3930,
+      "naaccr_xml_id": "serumAlbuminPretreatmentLevel",
+      "name": "Serum Albumin Pretreatment Level",
+      "table": "serum_alb_pretx_level_58159",
+      "used_for_staging": false
+    },
+    {
+      "default": "9",
+      "key": "high_risk_cytogenetics",
+      "metadata": [
+        {
+          "name": "COC_REQUIRED"
+        },
+        {
+          "name": "SSDI"
+        },
+        {
+          "name": "CCCR_REQUIRED"
+        },
+        {
+          "name": "SEER_REQUIRED"
+        }
+      ],
+      "naaccr_item": 3857,
+      "naaccr_xml_id": "highRiskCytogenetics",
+      "name": "High Risk Cytogenetics",
+      "table": "high_risk_cytogenetics_97806",
+      "used_for_staging": false
+    },
+    {
+      "default": "9",
+      "key": "ldh_level",
+      "metadata": [
+        {
+          "name": "COC_REQUIRED"
+        },
+        {
+          "name": "SSDI"
+        },
+        {
+          "name": "CCCR_REQUIRED"
+        },
+        {
+          "name": "SEER_REQUIRED"
+        }
+      ],
+      "naaccr_item": 3869,
+      "naaccr_xml_id": "ldhPretreatmentLevel",
+      "name": "LDH Level",
+      "table": "ldh_pretreatment_level_82697",
+      "used_for_staging": false
+    },
+    {
+      "default": "8",
+      "key": "ptld",
+      "metadata": [
+        {
+          "name": "SSDI",
+          "start": 2025
+        },
+        {
+          "name": "SEER_REQUIRED",
+          "start": 2025
+        },
+        {
+          "name": "NPCR_REQUIRED",
+          "start": 2025
+        },
+        {
+          "name": "COC_REQUIRED",
+          "start": 2025
+        }
+      ],
+      "naaccr_item": 1172,
+      "naaccr_xml_id": "ptld",
+      "name": "PTLD",
+      "table": "ptld_17694",
+      "used_for_staging": false
+    }
+  ],
+  "involved_tables": [
+    "multiple_myeloma_terminology_20875",
+    "neoadjuvant_therapy_37302",
+    "tumor_size_clinical_dna_64119",
+    "derived_ss2018_myeloma_and_plasma_cell_disorders_3894",
+    "b2_microglob_pretx_level_83264",
+    "extension_bgc",
+    "nodes_exam_dna_95635",
+    "tumor_size_summary_dna_13275",
+    "ptld_17694",
+    "neoadj_tx_clinical_response_31723",
+    "grade_post_therapy_clin_74830",
+    "histology",
+    "mets_hna",
+    "behavior",
+    "nodes_dna",
+    "ss2018_44993",
+    "derived_grade_21945",
+    "tumor_size_pathological_dna_6742",
+    "high_risk_cytogenetics_97806",
+    "type_of_reporting_source_76696",
+    "summary_stage_lymphoma_25139",
+    "serum_alb_pretx_level_58159",
+    "ldh_pretreatment_level_82697",
+    "primary_site",
+    "schema_selection_myeloma_plasma_cell_disorder",
+    "neoadj_tx_treatment_effect_52725",
+    "year_dx_validation",
+    "derived_summary_grade_na_6690",
+    "grade_post_therapy_path_65729",
+    "grade_clinical_18316",
+    "grade_pathological_73388",
+    "nodes_pos_dna_91511"
+  ],
+  "last_modified": "2025-11-14T20:05:03.738Z",
+  "mappings": [
+    {
+      "id": "summary_stage_2018",
+      "name": "Summary Stage 2018",
+      "tables": [
+        {
+          "id": "derived_summary_grade_na_6690",
+          "inputs": [
+            "grade_path",
+            "grade_clin"
+          ],
+          "outputs": [
+            "derived_summary_grade"
+          ]
+        },
+        {
+          "id": "extension_bgc",
+          "inputs": [
+            "eod_primary_tumor"
+          ],
+          "outputs": [
+            "ss2018_t"
+          ]
+        },
+        {
+          "id": "nodes_dna",
+          "inputs": [
+            "eod_regional_nodes"
+          ],
+          "outputs": [
+            "ss2018_n"
+          ]
+        },
+        {
+          "id": "mets_hna",
+          "inputs": [
+            "eod_mets"
+          ],
+          "outputs": [
+            "ss2018_m"
+          ]
+        },
+        {
+          "id": "summary_stage_lymphoma_25139",
+          "inputs": [
+            "ss2018_m",
+            "ss2018_n",
+            "ss2018_t"
+          ],
+          "outputs": [
+            "ss2018_derived"
+          ]
+        }
+      ]
+    }
+  ],
+  "name": "Plasma Cell Myeloma",
+  "notes": "**9732: Plasma cell myeloma (PCM)**\n\n**Note 1:** **Sources used in the development of this schema**\n* SEER Extent of Disease 1988: Codes and Coding Instructions (3rd Edition, 1998) (https://seer.cancer.gov/archive/manuals/EOD10Dig.3rd.pdf)\n* SEER Summary Staging Manual-2000: Codes and Coding Instructions (https://seer.cancer.gov/tools/ssm/ssm2000/)\n* Collaborative Stage Data Collection System, version 02.05:  https://cancerstaging.org/cstage/Pages/default.aspx \n* Chapter 82 *Plasma Cell Myeloma and Plasma Cell Disorder*, in the AJCC Cancer Staging Manual, Eighth Edition (2017) published by Springer International Publishing. Used with permission of the American College of Surgeons, Chicago, Illinois.\n\n**Note 2:** **Stage Definitions** \n* TNM data elements are not defined for this schema. TNM Stage Group is defined for multiple myeloma only (see Note 3)  \n\n**Note 3:** **Additional data items for Staging** \n* The *Revised International Staging System (R-ISS)* is being used to stage plasma cell myeloma/multiple myeloma (9732). \n* The following variables must be collected at the time of diagnosis for staging:\n  * High Risk Cytogenetics [NAACCR Data Item #3857]\n  * LDH Pretreatment Level [NAACCR Data Item #3932]\n  * Serum Albumin Pretreatment Level [NAACCR Data Item #3930]\n  * Serum Beta-2 Microglobulin Pretreatment Level [NAACCR Data Item #3931]",
+  "on_invalid_input": "CONTINUE",
+  "outputs": [
+    {
+      "default": "00821",
+      "key": "naaccr_schema_id",
+      "naaccr_item": 3800,
+      "naaccr_xml_id": "schemaId",
+      "name": "Schema ID"
+    },
+    {
+      "default": "{{ctx_alg_version}}",
+      "key": "derived_version",
+      "name": "Derived Version"
+    },
+    {
+      "default": "9",
+      "key": "ss2018_derived",
+      "naaccr_item": 762,
+      "naaccr_xml_id": "derivedSummaryStage2018",
+      "name": "Derived Summary Stage 2018",
+      "table": "derived_ss2018_myeloma_and_plasma_cell_disorders_3894"
+    },
+    {
+      "key": "derived_summary_grade",
+      "naaccr_item": 1975,
+      "naaccr_xml_id": "derivedSummaryGrade2018",
+      "name": "Derived Summary Grade 2018",
+      "table": "derived_grade_21945"
+    }
+  ],
+  "schema_discriminators": [
+    "behavior"
+  ],
+  "schema_selection_table": "schema_selection_myeloma_plasma_cell_disorder",
+  "title": "Plasma Cell Myeloma",
+  "version": "3.3"
+}

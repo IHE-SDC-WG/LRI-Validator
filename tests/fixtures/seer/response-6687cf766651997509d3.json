@@ -1,0 +1,42 @@
+{
+  "count": 25,
+  "max_score": 7140.0,
+  "offset": 0,
+  "order": "score",
+  "results": [
+    {
+      "id": "51f6cf5ae3e27c3994bd54aa",
+      "name": "Plasma cell myeloma (PCM)",
+      "score": 7140.0,
+      "type": "HEMATO"
+    },
+    {
+      "id": "51f6cf5ae3e27c3994bd5492",
+      "name": "Plasma cell leukemia (PCL) (see 9732/3 for 2010+)",
+      "score": 5120.0,
+      "type": "HEMATO"
+    },
+    {
+      "id": "51f6cf5ae3e27c3994bd54ad",
+      "name": "Solitary plasmacytoma of bone (SPB)",
+      "score": 800.0,
+      "type": "HEMATO"
+    },
+    {
+      "id": "51f6cf59e3e27c3994bd548c",
+      "name": "Extramedullary plasmacytoma (EMP)",
+      "score": 720.0,
+      "type": "HEMATO"
+    },
+    {
+      "id": "54536480e4b03ba322413242",
+      "name": "Evolving leukemia",
+      "score": 80.0,
+      "type": "HEMATO"
+    }
+  ],
+  "terms": [
+    "9732/3"
+  ],
+  "total": 5
+}
