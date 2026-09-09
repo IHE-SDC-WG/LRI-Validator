@@ -14,6 +14,8 @@ This work was conducted under the following Centers for Disease Control and Prev
 
 ## Browser use
 
+A hosted copy is available at <https://ihe-sdc-wg.github.io/LRI-Validator/>. No download or local server is needed.
+
 Open `dist/naaccr-lri-validator.html` directly from Finder. Paste a message, choose one `.hl7`, `.er7`, or `.txt` file, or load a synthetic example, then select **Validate message**. The example picker includes passing report styles and clearly labelled failing messages. The syntax check has no remote dependencies, makes no network requests, and does not use cookies or browser storage.
 
 Some browser launch paths block scripts in a directly opened local HTML file. If the page reports that its controls did not start, serve the same file on the loopback interface from the repository root:
