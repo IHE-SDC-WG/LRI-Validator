@@ -86,39 +86,68 @@
   function renderFindingList(list, findings) {
     var enabled = enabledSeverities();
     empty(list);
-    var visible = findings.filter(function (finding) { return enabled[finding.severity]; });
-    if (!visible.length) {
-      var none = document.createElement("li");
+    var definitions = [["error", "Errors"], ["warning", "Warnings"], ["information", "Information"]];
+    var groups = definitions.map(function (definition) {
+      return {
+        severity: definition[0],
+        label: definition[1],
+        findings: findings.filter(function (finding) {
+          return enabled[finding.severity] && finding.severity === definition[0];
+        })
+      };
+    }).filter(function (group) { return group.findings.length; });
+    if (!groups.length) {
+      var none = document.createElement("p");
       none.className = "empty";
       none.textContent = findings.length ? "No findings match the active severity filters." : "No findings.";
       list.appendChild(none);
       return;
     }
-    visible.forEach(function (finding) {
-      var item = document.createElement("li");
-      var button = document.createElement("button");
-      var head = document.createElement("div");
-      var severity = document.createElement("span");
-      var rule = document.createElement("span");
-      var detail = document.createElement("p");
-      var expected = document.createElement("small");
-      item.className = "finding";
-      button.type = "button";
-      head.className = "finding-head";
-      severity.className = "severity " + finding.severity;
-      severity.textContent = finding.severity;
-      rule.className = "rule";
-      rule.textContent = finding.rule_id + " · " + finding.location + (finding.line_number ? " · line " + finding.line_number : "");
-      detail.textContent = finding.message;
-      expected.textContent = "Expected: " + finding.expected_behavior + " Source: " + finding.source_section;
-      head.appendChild(severity);
-      head.appendChild(rule);
-      button.appendChild(head);
-      button.appendChild(detail);
-      button.appendChild(expected);
-      button.addEventListener("click", function () { focusLine(finding.line_number); });
-      item.appendChild(button);
-      list.appendChild(item);
+    groups.forEach(function (group) {
+      var section = document.createElement("section");
+      var heading = document.createElement(list.id === "content-findings" ? "h4" : "h3");
+      var items = document.createElement("ol");
+      var headingId = list.id + "-" + group.severity + "-heading";
+      section.className = "finding-group";
+      section.dataset.severity = group.severity;
+      section.setAttribute("aria-labelledby", headingId);
+      heading.id = headingId;
+      heading.className = "finding-group-heading " + group.severity;
+      heading.textContent = group.label + " (" + group.findings.length + ")";
+      items.className = "finding-group-list";
+      section.appendChild(heading);
+      group.findings.forEach(function (finding) {
+        var item = document.createElement("li");
+        var button = document.createElement("button");
+        var head = document.createElement("div");
+        var rule = document.createElement("span");
+        var detail = document.createElement("p");
+        var more = document.createElement("details");
+        var summary = document.createElement("summary");
+        var expected = document.createElement("p");
+        item.className = "finding";
+        button.type = "button";
+        button.className = "finding-main";
+        head.className = "finding-head";
+        rule.className = "rule";
+        rule.textContent = finding.rule_id + " · " + finding.location + (finding.line_number ? " · line " + finding.line_number : "");
+        detail.className = "finding-message";
+        detail.textContent = finding.message;
+        summary.textContent = "Expected and source";
+        expected.className = "finding-detail";
+        expected.textContent = "Expected: " + finding.expected_behavior + " Source: " + finding.source_section;
+        head.appendChild(rule);
+        button.appendChild(head);
+        button.appendChild(detail);
+        more.appendChild(summary);
+        more.appendChild(expected);
+        button.addEventListener("click", function () { focusLine(finding.line_number); });
+        item.appendChild(button);
+        item.appendChild(more);
+        items.appendChild(item);
+      });
+      section.appendChild(items);
+      list.appendChild(section);
     });
   }
 

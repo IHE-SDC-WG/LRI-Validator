@@ -22,8 +22,8 @@ class Element {
   addEventListener(name, callback) { (this.listeners[name] ||= []).push(callback); }
   appendChild(child) { this.children.push(child); return child; }
   removeChild(child) { this.children.splice(this.children.indexOf(child), 1); }
-  focus() {}
-  setSelectionRange() {}
+  focus() { this.focused = true; }
+  setSelectionRange(start, end) { this.selectionStart = start; this.selectionEnd = end; }
   setAttribute(name, value) {
     this[name] = value;
     if (name.startsWith("data-")) this.dataset[name.slice(5).replace(/-([a-z])/g, (_match, letter) => letter.toUpperCase())] = value;
@@ -122,6 +122,10 @@ function descendantText(element) {
   return [element.textContent, ...element.children.map(descendantText)].join(" ");
 }
 
+function findingGroups(element) {
+  return element.children.filter(child => child.className === "finding-group");
+}
+
 async function main() {
   const html = fs.readFileSync("dist/naaccr-lri-validator.html", "utf8");
   const scripts = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].map(match => match[1]);
@@ -176,6 +180,29 @@ async function main() {
     assert.ok(descendantText(elements.findings).includes(example.ruleId), `${name} should display ${example.ruleId}`);
   }
 
+  elements.sample.value = "invalid-message-type";
+  await elements["load-sample"].click();
+  await elements.validate.click();
+  let groups = findingGroups(elements.findings);
+  assert.deepEqual(groups.map(group => group.dataset.severity), ["error", "warning"]);
+  assert.equal(groups[0].children[0].textContent, "Errors (1)");
+  assert.match(groups[0].children[1].children[0].children[0].children[0].children[0].textContent, /LRI-15/);
+  const firstFinding = groups[0].children[1].children[0];
+  assert.equal(firstFinding.children[1].tagName, "DETAILS");
+  assert.equal(firstFinding.children[1].children[0].tagName, "SUMMARY");
+  assert.equal(firstFinding.children[1].children[0].textContent, "Expected and source");
+  assert.match(firstFinding.children[1].children[1].textContent, /^Expected: .* Source: /);
+  elements.message.focused = false;
+  await firstFinding.children[0].click();
+  assert.equal(elements.message.focused, true);
+  assert.equal(elements.message.selectionStart, 0);
+  assert.ok(elements.message.selectionEnd > 0);
+  severities[1].checked = false;
+  await severities[1].dispatch("change");
+  assert.deepEqual(findingGroups(elements.findings).map(group => group.dataset.severity), ["error"]);
+  severities[1].checked = true;
+  await severities[1].dispatch("change");
+
   elements.message.value = context.__LRI_SAMPLES__["breast-synoptic-summary"];
   await elements.validate.click();
   assert.equal(elements["content-panel"].hidden, false, "content panel appears after valid local validation");
@@ -222,6 +249,10 @@ async function main() {
   assert.equal(elements["content-panel"]["data-content-state"], "done");
   assert.equal(elements["content-report"].hidden, false);
   assert.match(elements["content-result-label"].textContent, /^PASS:/);
+  groups = findingGroups(elements["content-findings"]);
+  assert.deepEqual(groups.map(group => group.dataset.severity), ["information"]);
+  assert.equal(groups[0].children[0].textContent, "Information (1)");
+  assert.equal(groups[0].children[1].children[0].children[1].tagName, "DETAILS");
   assert.ok(requests.length > 0);
   assert.ok(requests.every(request => !JSON.stringify(request).includes("PATBREAST1")));
   assert.equal(elements["content-queries"].children.length, requests.length);
