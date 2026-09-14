@@ -16,10 +16,10 @@
     h4 { margin:18px 0 8px; font-size:15px; }
     main { max-width:1180px; margin:0 auto; padding:24px; }
     .privacy { margin:0 0 20px; padding:13px 16px; border-left:4px solid var(--accent); background:#eaf4f6; }
-    .grid { display:grid; grid-template-columns:minmax(0,1.08fr) minmax(360px,.92fr); gap:20px; align-items:start; }
+    .grid { display:grid; grid-template-columns:minmax(0,1fr); gap:20px; align-items:start; }
     .card { background:var(--paper); border:1px solid var(--line); border-radius:10px; box-shadow:0 2px 8px rgba(23,32,42,.06); padding:20px; }
     label { font-weight:650; }
-    textarea { width:100%; min-height:410px; margin-top:8px; resize:vertical; border:1px solid #9ba8b4; border-radius:6px; padding:12px; font:13px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace; color:#15212b; background:#fbfcfd; tab-size:2; }
+    textarea { width:100%; min-height:280px; margin-top:8px; resize:vertical; border:1px solid #9ba8b4; border-radius:6px; padding:12px; font:13px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace; color:#15212b; background:#fbfcfd; tab-size:2; }
     textarea:focus,button:focus,select:focus,input:focus { outline:3px solid #8fc7d5; outline-offset:2px; }
     .row { display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-top:12px; }
     button,.button { border:1px solid var(--accent); border-radius:6px; background:var(--accent); color:#fff; padding:9px 14px; font:inherit; font-weight:650; cursor:pointer; }
@@ -39,15 +39,21 @@
     fieldset { border:0; padding:0; margin:13px 0; }
     legend { font-weight:650; margin-bottom:5px; }
     fieldset label { font-weight:500; margin-right:13px; white-space:nowrap; }
-    .findings { list-style:none; padding:0; margin:14px 0 0; max-height:550px; overflow:auto; }
-    .finding { margin:0 0 9px; }
-    .finding button { width:100%; text-align:left; color:var(--ink); background:#fff; border-color:var(--line); padding:11px; font-weight:400; }
-    .finding button:hover { border-color:var(--accent); background:#f7fbfc; }
-    .finding-head { display:flex; gap:8px; justify-content:space-between; margin-bottom:5px; }
-    .severity { font-weight:750; text-transform:uppercase; font-size:12px; letter-spacing:.04em; }
+    .findings { margin:14px 0 0; max-height:550px; overflow:auto; border:1px solid var(--line); border-radius:8px; background:#fff; }
+    .finding-group + .finding-group { border-top:1px solid var(--line); }
+    .finding-group-heading { margin:0; padding:8px 11px; background:var(--wash); font-size:14px; text-transform:uppercase; letter-spacing:.035em; }
+    .finding-group-list { list-style:none; padding:0; margin:0; }
+    .finding { border-top:1px solid #e3e8ed; }
+    .finding:first-child { border-top:0; }
+    .finding-main { width:100%; text-align:left; color:var(--ink); background:#fff; border:0; border-radius:0; padding:8px 11px 6px; font-weight:400; }
+    .finding-main:hover { background:#f7fbfc; }
+    .finding-main:focus { position:relative; z-index:1; }
+    .finding-head { display:flex; gap:8px; justify-content:space-between; margin-bottom:2px; }
     .rule { font:12px ui-monospace,SFMono-Regular,Menlo,monospace; color:var(--muted); }
-    .finding p { margin:4px 0; }
-    .finding small { color:var(--muted); }
+    .finding-message { margin:2px 0; }
+    .finding details { margin:0; padding:0 11px 7px; }
+    .finding details summary { width:max-content; max-width:100%; color:var(--accent2); cursor:pointer; font-size:13px; }
+    .finding-detail { margin:5px 0 0; color:var(--muted); font-size:13px; }
     .empty { color:var(--muted); padding:24px 0; text-align:center; }
     details { margin-top:15px; }
     details li { margin:6px 0; }
@@ -68,8 +74,8 @@
     .query-raw { margin:0; padding:10px 12px; border-top:1px solid var(--line); background:var(--wash); white-space:pre-wrap; overflow-wrap:anywhere; font:12px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace; }
     footer { max-width:1180px; margin:0 auto; padding:0 24px 28px; color:var(--muted); font-size:13px; }
     [hidden] { display:none !important; }
-    @media (max-width:850px) { .grid { grid-template-columns:1fr; } textarea { min-height:300px; } }
-    @media print { body { background:#fff; } header { color:#000; background:#fff; padding:0 0 18px; } header p { color:#333; } main { padding:0; max-width:none; } .privacy,.editor,.controls,.content-run-controls,footer { display:none !important; } .grid { display:block; } .card { border:0; box-shadow:none; padding:0; } .findings { max-height:none; overflow:visible; } .finding button { break-inside:avoid; } }
+    @media (max-width:850px) { textarea { min-height:240px; } .status { grid-template-columns:1fr; } .finding-head { display:block; } }
+    @media print { body { background:#fff; } header { color:#000; background:#fff; padding:0 0 18px; } header p { color:#333; } main { padding:0; max-width:none; } .privacy,.editor,.controls,.content-run-controls,footer { display:none !important; } .grid { display:block; } .card { border:0; box-shadow:none; padding:0; } .findings { max-height:none; overflow:visible; } .finding { break-inside:avoid; } .finding details > * { display:block !important; } .finding details summary { display:none !important; } }
   </style>
 </head>
 <body>
@@ -82,7 +88,7 @@
     <div class="grid">
       <form id="input-form" class="card editor" aria-labelledby="input-heading">
         <h2 id="input-heading">Message input</h2>
-        <label for="message">Paste one ER7 message</label>
+        <label for="message">Paste one HL7 message</label>
         <textarea id="message" spellcheck="false" aria-describedby="input-help" placeholder="MSH|^~\&amp;|..."></textarea>
         <p id="input-help">CR, LF, and CRLF endings are accepted. Complete MLLP framing is removed. Batches and multiple messages are rejected.</p>
         <div class="row">
@@ -122,7 +128,7 @@
               <button id="print" class="secondary" type="button">Print report</button>
             </div>
           </div>
-          <ol id="findings" class="findings"></ol>
+          <div id="findings" class="findings"></div>
           <details><summary>Coverage notices</summary><ul id="coverage"></ul></details>
           <section id="content-panel" class="content-panel" aria-labelledby="content-heading" data-content-state="idle" hidden>
             <h3 id="content-heading">Registry content check (optional, online)</h3>
@@ -150,7 +156,7 @@
                 <div><strong id="content-result-label"></strong><div id="content-ruleset-label" class="rule"></div></div>
               </div>
               <div id="content-counts" class="counts"></div>
-              <ol id="content-findings" class="findings"></ol>
+              <div id="content-findings" class="findings"></div>
               <section class="query-log" aria-labelledby="query-log-heading">
                 <h4 id="query-log-heading">SEER requests made</h4>
                 <ol id="content-queries" class="queries"></ol>

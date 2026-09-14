@@ -30,6 +30,9 @@ def test_html_build_is_deterministic_and_self_contained() -> None:
     assert "JSON.parse" not in text
     assert 'type="application/json"' not in text
     assert "api.seer.cancer.gov" in text
+    assert "Paste one HL7 message" in text
+    assert "Paste one ER7 message" not in text
+    assert "grid-template-columns:minmax(0,1fr)" in text
 
 
 def test_javascript_syntax() -> None:

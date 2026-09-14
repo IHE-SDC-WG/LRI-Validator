@@ -14,9 +14,19 @@ This work was conducted under the following Centers for Disease Control and Prev
 
 ## Browser use
 
-A hosted copy is available at <https://ihe-sdc-wg.github.io/LRI-Validator/>. No download or local server is needed.
+A hosted copy is available at <https://ihe-sdc-wg.github.io/LRI-Validator/>. This is the simplest way to use the validator because no download or local server is needed.
 
-Open `dist/naaccr-lri-validator.html` directly from Finder. Paste a message, choose one `.hl7`, `.er7`, or `.txt` file, or load a synthetic example, then select **Validate message**. The example picker includes passing report styles and clearly labelled failing messages. The syntax check has no remote dependencies, makes no network requests, and does not use cookies or browser storage.
+To download a local copy:
+
+1. Open the [LRI-Validator repository](https://github.com/IHE-SDC-WG/LRI-Validator).
+2. Select the green **Code** button, then select **Download ZIP**. You can also use the [direct ZIP download](https://github.com/IHE-SDC-WG/LRI-Validator/archive/refs/heads/main.zip).
+3. Find `LRI-Validator-main.zip` in the folder where your browser saves downloads and extract it.
+4. Open the extracted `LRI-Validator-main` folder, then open its `dist` subfolder.
+5. Open `naaccr-lri-validator.html` in a current browser.
+
+The `.html` extension is intentional. This file is a local browser application, not a Windows `.exe`, and it does not require installation. See the [Quick User Guide](docs/NAACCR-LRI-Validator-Quick-User-Guide.docx) for illustrated instructions.
+
+Paste a message, choose one `.hl7`, `.er7`, or `.txt` file, or load a synthetic example, then select **Validate message**. The example picker includes passing report styles and clearly labelled failing messages. The syntax check has no remote dependencies, makes no network requests, and does not use cookies or browser storage.
 
 Some browser launch paths block scripts in a directly opened local HTML file. If the page reports that its controls did not start, serve the same file on the loopback interface from the repository root:
 
@@ -26,7 +36,9 @@ python3 -m http.server 8000 --bind 127.0.0.1 --directory dist
 
 Then open <http://127.0.0.1:8000/naaccr-lri-validator.html>. Stop the optional server with `Ctrl-C`.
 
-The finding list can be filtered by severity. Selecting a finding focuses the associated message line. JSON and print reports omit the raw message and arbitrary clinical text.
+The on-screen Validation Report groups findings as Errors, Warnings, then Information. Within each group, message-level findings without a line number appear first and line-based findings follow message-line order. Missing required (`R`) fields are errors. Empty required-but-may-be-empty (`RE`) fields produce warnings when values are not known. Other rule-specific errors and warnings may also appear.
+
+The finding list can be filtered by severity. Selecting a finding focuses the associated message line, and **Expected and source** opens the full requirement and source section. JSON and print reports omit the raw message and arbitrary clinical text.
 
 ## Registry content check (optional, online)
 
@@ -106,7 +118,7 @@ The build is deterministic. The tracked HTML contains exactly one `fetch(` call 
 Current artifact SHA-256:
 
 ```text
-b5797256fbbce9b21763cf47569fe09f9f544987f7260e474e09ac08e2c82888  dist/naaccr-lri-validator.html
+212ccab1b16a98afe4baecb5cb334be59d6e539f98495124ab06a07d7ccb21a2  dist/naaccr-lri-validator.html
 ```
 
 ## Privacy
