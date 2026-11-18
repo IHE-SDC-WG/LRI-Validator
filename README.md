@@ -93,7 +93,7 @@ content_report = validate_content(message_text, syntax_valid=syntax_report.valid
 
 ## Coverage boundary
 
-The syntax catalog covers message identity, delimiters, segment structure, required and expected-when-known fields, cardinality, set IDs, NG-FRU and NAACCR profile identifiers, eight NAACCR identifier rules, local date/status relationships, the five report styles, table-listed report/section LOINCs, OBX-4 patterns, CAP eCP identifier/repeat/link syntax, and draft-enumerated SPM-9 laterality codes.
+The syntax catalog covers message identity, delimiters, segment structure, required and expected-when-known fields, cardinality, set IDs, NG-FRU and NAACCR profile identifiers (LRI-2/LRI-3 on MSH-21), the eight NAACCR identifier rules, HD_04 assigning-authority components and types (MSH-3 to MSH-6, XCN_03.9/.14, XON_04.6), XCN_03 required and excluded components on every NAACCR provider field, local date/status relationships, the five report styles, table-listed report/section LOINCs, OBX-4 patterns, CAP eCP identifier/repeat/link syntax, and draft-enumerated SPM-9 laterality codes.
 
 The optional content stage uses conservative extraction. Conflicting candidates are skipped. It does not claim complete cancer staging, reportability determination, CAP eCP dictionary validation, or full terminology membership. Schema field checks apply only when the selected SEER schema publishes a table for an extracted value.
 
@@ -118,7 +118,7 @@ The build is deterministic. The tracked HTML contains exactly one `fetch(` call 
 Current artifact SHA-256:
 
 ```text
-212ccab1b16a98afe4baecb5cb334be59d6e539f98495124ab06a07d7ccb21a2  dist/naaccr-lri-validator.html
+c00db5512fd494f42c77f1f9acd8513d4a26c4f2a4f01408d5cc1e38ce47be6f  dist/naaccr-lri-validator.html
 ```
 
 ## Privacy

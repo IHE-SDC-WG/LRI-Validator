@@ -41,6 +41,14 @@ MD_RE = re.compile(r"^[A-Za-z]{2,4}[_-].+$")
 DT_RE = re.compile(r"^(?:0000|\d{4}(?:\d{2}(?:\d{2}(?:\d{2}(?:\d{2}(?:\d{2}(?:\.\d{1,4})?)?)?)?)?)?)(?:[+-]\d{4})?$")
 ECP_RE = re.compile(r"^(\d{1,9}\.\d{9})(?:__([1-9]\d*))?$")
 
+HD04_TYPES = ("CLIA", "NPI", "MD", "ISO")
+XCN03_FIELDS = {"PV1": (7, 8, 9, 17), "ORC": (12,), "OBR": (10, 16, 28), "OBX": (16,)}
+XON04_FIELDS = {"ORC": (21,), "OBX": (23,)}
+XCN03_EXCLUDED = ((7, "degree"), (17, "name validity range"))
+NPI_EXAMPLE = ("1234567893", "NPI")
+OID_EXAMPLE = ("2.16.840.1.113883.19.5", "ISO")
+TYPED_LABELS = {"NPI": "a valid NPI", "MD": "a license number with a 2-4 letter state/province prefix", "ISO": "an ISO OID"}
+
 
 REQUIRED_FIELDS = {
     "MSH": (1, 2, 4, 7, 9, 10, 11, 12, 15, 16, 21),
@@ -281,8 +289,10 @@ class Evaluator:
         for repetition in msh.field(21).split("~"):
             identifier = _component(repetition, 3)
             identifiers.append(identifier)
-            if identifier and (not OID_RE.fullmatch(identifier) or _component(repetition, 4) != "ISO"):
-                self.add("LRI-NAACCR-05", "MSH-21", msh.line, "A profile identifier is not an ISO OID EI value.")
+            if identifier and not OID_RE.fullmatch(identifier):
+                self.add("LRI-2", "MSH-21.3", msh.line, "A profile identifier in MSH-21.3 is not an ISO OID.")
+            if identifier and _component(repetition, 4) != "ISO":
+                self.add("LRI-3", "MSH-21.4", msh.line, "A profile identifier type in MSH-21.4 is not ISO.")
         oids = CONSTANTS["profile_oids"]
         if oids["naaccr"] not in identifiers:
             self.add("LRI-NAACCR-PROFILE", "MSH-21", msh.line, "The NAACCR component OID is missing.")
@@ -310,33 +320,78 @@ class Evaluator:
         elif kind == "ISO" and not OID_RE.fullmatch(uid):
             self.add(f"{prefix}-05" if prefix.endswith("NAACCR") else "LRI-NAACCR-08", location, line, "The universal identifier is not an ISO OID.")
 
+    def check_hd04(self, value: str, separator: str, location: str, line: int, example: tuple[str, str]) -> None:
+        if not value:
+            return
+        namespace, uid, kind = (_component(value, number, separator) for number in (1, 2, 3))
+        missing = [label for label, part in (("universal ID", uid), ("type", kind)) if not part]
+        if missing:
+            sample = separator.join(("LOCAL", *example))
+            message = (f"{location} has no {' or '.join(missing)}; "
+                       f"HD_04 needs namespace{separator}ID{separator}type, e.g. {sample}.")
+            for number, part in ((2, uid), (3, kind)):
+                if not part:
+                    self.add("COMPONENT-R", f"{location}.{number}", line, message)
+        if kind and kind not in HD04_TYPES:
+            self.add("HD04-001", f"{location}.3", line, f"{location}.3 is not CLIA, NPI, MD, or ISO.")
+        elif uid and kind:
+            self._typed_identifier(uid, kind, f"{location}.2", line, "HD")
+
     def identifiers(self) -> None:
+        msh = self.one("MSH")
+        if msh:
+            for number in (3, 4, 5, 6):
+                self.check_hd04(msh.field(number), "^", f"MSH-{number}", msh.line, OID_EXAMPLE)
         for name, fields in {"ORC": (2, 3, 4), "OBR": (2, 3)}.items():
             for segment in self.all(name):
                 for number in fields:
                     value = segment.field(number)
                     if value:
                         self._typed_identifier(_component(value, 3), _component(value, 4), f"{name}-{number}", segment.line, "LRI-NAACCR")
-        for name, fields in {"PV1": (7, 8, 9, 17), "ORC": (12,), "OBR": (16, 28), "OBX": (16, 25)}.items():
-            for segment in self.all(name):
-                for number in fields:
-                    for repetition in segment.field(number).split("~") if segment.field(number) else ():
-                        authority = _component(repetition, 9)
-                        if authority:
-                            self._typed_identifier(_component(authority, 2, "&"), _component(authority, 3, "&"), f"{name}-{number}.9", segment.line, "HD")
+        for segment in self.segments:
+            for number in XCN03_FIELDS.get(segment.name, ()):
+                location = f"{segment.name}-{number}"
+                for repetition in segment.field(number).split("~"):
+                    if not repetition:
+                        continue
+                    if not _component(repetition, 2):
+                        self.add("COMPONENT-R", f"{location}.2", segment.line, f"{location}.2 (family name) is empty; XCN_03 requires it.")
+                    for component, label in XCN03_EXCLUDED:
+                        if _component(repetition, component):
+                            self.add("COMPONENT-X", f"{location}.{component}", segment.line, f"{location}.{component} ({label}) is valued; XCN_03 excludes it.")
+                    for component in (9, 14):
+                        self.check_hd04(_component(repetition, component), "&", f"{location}.{component}", segment.line, NPI_EXAMPLE)
+            for number in XON04_FIELDS.get(segment.name, ()):
+                for repetition in segment.field(number).split("~"):
+                    self.check_hd04(_component(repetition, 6), "&", f"{segment.name}-{number}.6", segment.line, OID_EXAMPLE)
         for obr in self.all("OBR"):
-            cnn = _component(obr.field(32), 1)
-            if cnn:
-                uid, kind = _component(cnn, 10, "&"), _component(cnn, 11, "&")
-                if not uid:
-                    self.add("LRI-NAACCR-01", "OBR-32.1.10", obr.line, "CNN.10 is empty.")
-                if kind not in {"NPI", "MD", "ISO"}:
-                    self.add("LRI-NAACCR-02", "OBR-32.1.11", obr.line, "CNN.11 has an unsupported identifier type.")
-                elif uid:
-                    mapping = {"NPI": "LRI-NAACCR-03", "MD": "LRI-NAACCR-04", "ISO": "LRI-NAACCR-05"}
-                    valid = _is_npi(uid) if kind == "NPI" else MD_RE.fullmatch(uid) if kind == "MD" else OID_RE.fullmatch(uid)
-                    if not valid:
-                        self.add(mapping[kind], "OBR-32.1.10", obr.line, "CNN.10 is invalid for the declared identifier type.")
+            self.interpreter(obr)
+
+    def interpreter(self, obr: Segment) -> None:
+        ndl = obr.field(32)
+        cnn = _component(ndl, 1)
+        if not cnn:
+            return
+        namespace, uid, kind = (_component(cnn, number, "&") for number in (9, 10, 11))
+        hints = []
+        if any(_component(ndl, number) and not DT_RE.fullmatch(_component(ndl, number)) for number in (2, 3)):
+            hints.append("OBR-32.2/OBR-32.3 hold non-timestamp text: the interpreter's parts must be &-separated inside OBR-32.1; ^ starts the next OBR-32 component.")
+        if namespace and not uid and not kind:
+            hints.append("CNN.9 is valued but CNN.10 and CNN.11 are empty: the identifier type belongs in CNN.11 and the ID in CNN.10, e.g. CMS&2.16.840.1.113883.4.6&ISO.")
+        found: list[tuple[str, str, str]] = []
+        if not uid:
+            found.append(("LRI-NAACCR-01", "OBR-32.1.10", "CNN.10 (assigning authority universal ID) is empty."))
+        if kind not in {"NPI", "MD", "ISO"}:
+            detail = "is empty" if not kind else "holds an unsupported value"
+            found.append(("LRI-NAACCR-02", "OBR-32.1.11", f"CNN.11 (assigning authority universal ID type) {detail}; it must be NPI, MD, or ISO."))
+        elif uid:
+            valid = _is_npi(uid) if kind == "NPI" else MD_RE.fullmatch(uid) if kind == "MD" else OID_RE.fullmatch(uid)
+            if not valid:
+                found.append(("LRI-NAACCR-01", "OBR-32.1.10", f"CNN.10 is not {TYPED_LABELS[kind]} as CNN.11 {kind} requires."))
+        for index, (rule_id, location, message) in enumerate(found):
+            if hints and index == len(found) - 1:
+                message = " ".join((message, *hints))
+            self.add(rule_id, location, obr.line, message)
 
     def order_groups(self) -> None:
         starts = [index for index, segment in enumerate(self.segments) if segment.name == "ORC"]
