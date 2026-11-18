@@ -118,7 +118,7 @@ The build is deterministic. The tracked HTML contains exactly one `fetch(` call 
 Current artifact SHA-256:
 
 ```text
-56c3c4e6a6452e71301714e28f7df1e4cd71f43371138827900e6af11244f980  dist/naaccr-lri-validator.html
+c00db5512fd494f42c77f1f9acd8513d4a26c4f2a4f01408d5cc1e38ce47be6f  dist/naaccr-lri-validator.html
 ```
 
 ## Privacy

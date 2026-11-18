@@ -326,14 +326,14 @@ class Evaluator:
         namespace, uid, kind = (_component(value, number, separator) for number in (1, 2, 3))
         missing = [label for label, part in (("universal ID", uid), ("type", kind)) if not part]
         if missing:
-            sample = separator.join((namespace or "LOCAL", *example))
-            message = (f'{location} is "{value}" with no {" or ".join(missing)}; '
+            sample = separator.join(("LOCAL", *example))
+            message = (f"{location} has no {' or '.join(missing)}; "
                        f"HD_04 needs namespace{separator}ID{separator}type, e.g. {sample}.")
             for number, part in ((2, uid), (3, kind)):
                 if not part:
                     self.add("COMPONENT-R", f"{location}.{number}", line, message)
         if kind and kind not in HD04_TYPES:
-            self.add("HD04-001", f"{location}.3", line, f'{location}.3 is "{kind}"; HD_04 allows CLIA, NPI, MD, or ISO.')
+            self.add("HD04-001", f"{location}.3", line, f"{location}.3 is not CLIA, NPI, MD, or ISO.")
         elif uid and kind:
             self._typed_identifier(uid, kind, f"{location}.2", line, "HD")
 
@@ -377,12 +377,12 @@ class Evaluator:
         if any(_component(ndl, number) and not DT_RE.fullmatch(_component(ndl, number)) for number in (2, 3)):
             hints.append("OBR-32.2/OBR-32.3 hold non-timestamp text: the interpreter's parts must be &-separated inside OBR-32.1; ^ starts the next OBR-32 component.")
         if namespace and not uid and not kind:
-            hints.append(f'CNN.9 is "{namespace}": the identifier type belongs in CNN.11 and the ID in CNN.10, e.g. CMS&2.16.840.1.113883.4.6&ISO.')
+            hints.append("CNN.9 is valued but CNN.10 and CNN.11 are empty: the identifier type belongs in CNN.11 and the ID in CNN.10, e.g. CMS&2.16.840.1.113883.4.6&ISO.")
         found: list[tuple[str, str, str]] = []
         if not uid:
             found.append(("LRI-NAACCR-01", "OBR-32.1.10", "CNN.10 (assigning authority universal ID) is empty."))
         if kind not in {"NPI", "MD", "ISO"}:
-            detail = "is empty" if not kind else f'is "{kind}"'
+            detail = "is empty" if not kind else "holds an unsupported value"
             found.append(("LRI-NAACCR-02", "OBR-32.1.11", f"CNN.11 (assigning authority universal ID type) {detail}; it must be NPI, MD, or ISO."))
         elif uid:
             valid = _is_npi(uid) if kind == "NPI" else MD_RE.fullmatch(uid) if kind == "MD" else OID_RE.fullmatch(uid)

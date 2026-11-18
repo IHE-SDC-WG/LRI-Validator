@@ -58,16 +58,16 @@ def _case_findings(name: str) -> dict[tuple[str, str], str]:
 @pytest.mark.parametrize("name,rule_id,location,fragments", [
     ("cnn-caret-separators", "LRI-NAACCR-02", "OBR-32.1.11", ["is empty", "&-separated inside OBR-32.1", "^ starts the next OBR-32 component"]),
     ("cnn-caret-separators", "LRI-NAACCR-01", "OBR-32.1.10", ["CNN.10 (assigning authority universal ID) is empty."]),
-    ("cnn-type-in-namespace", "LRI-NAACCR-02", "OBR-32.1.11", ['CNN.9 is "NPI"', "type belongs in CNN.11 and the ID in CNN.10"]),
-    ("invalid-cnn-type", "LRI-NAACCR-02", "OBR-32.1.11", ['CNN.11 (assigning authority universal ID type) is "CLIA"; it must be NPI, MD, or ISO.']),
+    ("cnn-type-in-namespace", "LRI-NAACCR-02", "OBR-32.1.11", ["CNN.9 is valued but CNN.10 and CNN.11 are empty", "type belongs in CNN.11 and the ID in CNN.10"]),
+    ("invalid-cnn-type", "LRI-NAACCR-02", "OBR-32.1.11", ["CNN.11 (assigning authority universal ID type) holds an unsupported value; it must be NPI, MD, or ISO."]),
     ("invalid-cnn-npi", "LRI-NAACCR-01", "OBR-32.1.10", ["CNN.10 is not a valid NPI as CNN.11 NPI requires."]),
-    ("hd-namespace-only", "COMPONENT-R", "ORC-12.9.2", ['ORC-12.9 is "CMS" with no universal ID or type; HD_04 needs namespace&ID&type, e.g. CMS&1234567893&NPI.']),
-    ("hd-namespace-only", "COMPONENT-R", "OBR-16.9.3", ['OBR-16.9 is "CMS" with no universal ID or type']),
-    ("hd-unsupported-type", "HD04-001", "ORC-12.9.3", ['ORC-12.9.3 is "L"; HD_04 allows CLIA, NPI, MD, or ISO.']),
+    ("hd-namespace-only", "COMPONENT-R", "ORC-12.9.2", ["ORC-12.9 has no universal ID or type; HD_04 needs namespace&ID&type, e.g. LOCAL&1234567893&NPI."]),
+    ("hd-namespace-only", "COMPONENT-R", "OBR-16.9.3", ["OBR-16.9 has no universal ID or type"]),
+    ("hd-unsupported-type", "HD04-001", "ORC-12.9.3", ["ORC-12.9.3 is not CLIA, NPI, MD, or ISO."]),
     ("xcn-missing-family-name", "COMPONENT-R", "OBX-16.2", ["OBX-16.2 (family name) is empty; XCN_03 requires it."]),
     ("xcn-degree-sent", "COMPONENT-X", "OBX-16.7", ["OBX-16.7 (degree) is valued; XCN_03 excludes it."]),
-    ("msh3-namespace-only", "COMPONENT-R", "MSH-3.2", ['MSH-3 is "SYNAPP" with no universal ID or type; HD_04 needs namespace^ID^type, e.g. SYNAPP^2.16.840.1.113883.19.5^ISO.']),
-    ("xon-authority-namespace-only", "COMPONENT-R", "ORC-21.6.3", ['ORC-21.6 is "CMS" with no universal ID or type']),
+    ("msh3-namespace-only", "COMPONENT-R", "MSH-3.2", ["MSH-3 has no universal ID or type; HD_04 needs namespace^ID^type, e.g. LOCAL^2.16.840.1.113883.19.5^ISO."]),
+    ("xon-authority-namespace-only", "COMPONENT-R", "ORC-21.6.3", ["ORC-21.6 has no universal ID or type"]),
     ("msh21-not-oid", "LRI-2", "MSH-21.3", ["not an ISO OID"]),
     ("msh21-not-iso", "LRI-3", "MSH-21.4", ["is not ISO"]),
 ])
@@ -75,6 +75,11 @@ def test_identifier_messages(name: str, rule_id: str, location: str, fragments: 
     message = _case_findings(name)[(rule_id, location)]
     for fragment in fragments:
         assert fragment in message
+
+
+def test_identifier_findings_omit_raw_values() -> None:
+    report_json = json.dumps(validate_message(apply_case(next(case for case in CASES if case["name"] == "identifier-privacy"))).to_dict())
+    assert "SECRET" not in report_json
 
 
 def test_cnn_hint_is_not_repeated() -> None:

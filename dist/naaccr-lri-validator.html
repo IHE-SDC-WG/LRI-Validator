@@ -1109,11 +1109,11 @@ window.__LRI_SAMPLES__["invalid-missing-specimen"] = [
       const namespace = component(value, 1, separator), uid = component(value, 2, separator), kind = component(value, 3, separator);
       const missing = [["universal ID", uid], ["type", kind]].filter(([, part]) => !part).map(([label]) => label);
       if (missing.length) {
-        const sample = [namespace || "LOCAL", ...example].join(separator);
-        const message = `${location} is "${value}" with no ${missing.join(" or ")}; HD_04 needs namespace${separator}ID${separator}type, e.g. ${sample}.`;
+        const sample = ["LOCAL", ...example].join(separator);
+        const message = `${location} has no ${missing.join(" or ")}; HD_04 needs namespace${separator}ID${separator}type, e.g. ${sample}.`;
         [[2, uid], [3, kind]].forEach(([number, part]) => { if (!part) add("COMPONENT-R", `${location}.${number}`, line, message); });
       }
-      if (kind && !HD04_TYPES.includes(kind)) add("HD04-001", `${location}.3`, line, `${location}.3 is "${kind}"; HD_04 allows CLIA, NPI, MD, or ISO.`);
+      if (kind && !HD04_TYPES.includes(kind)) add("HD04-001", `${location}.3`, line, `${location}.3 is not CLIA, NPI, MD, or ISO.`);
       else if (uid && kind) typed(uid, kind, `${location}.2`, line, true);
     }
     if (msh) [3, 4, 5, 6].forEach(n => checkHd04(field(msh, n), "^", `MSH-${n}`, msh.line, OID_EXAMPLE));
@@ -1135,10 +1135,10 @@ window.__LRI_SAMPLES__["invalid-missing-specimen"] = [
       const namespace = component(cnn, 9, "&"), uid = component(cnn, 10, "&"), kind = component(cnn, 11, "&");
       const hints = [];
       if ([2, 3].some(n => component(ndl, n) && !DT.test(component(ndl, n)))) hints.push("OBR-32.2/OBR-32.3 hold non-timestamp text: the interpreter's parts must be &-separated inside OBR-32.1; ^ starts the next OBR-32 component.");
-      if (namespace && !uid && !kind) hints.push(`CNN.9 is "${namespace}": the identifier type belongs in CNN.11 and the ID in CNN.10, e.g. CMS&2.16.840.1.113883.4.6&ISO.`);
+      if (namespace && !uid && !kind) hints.push("CNN.9 is valued but CNN.10 and CNN.11 are empty: the identifier type belongs in CNN.11 and the ID in CNN.10, e.g. CMS&2.16.840.1.113883.4.6&ISO.");
       const found = [];
       if (!uid) found.push(["LRI-NAACCR-01", "OBR-32.1.10", "CNN.10 (assigning authority universal ID) is empty."]);
-      if (!["NPI", "MD", "ISO"].includes(kind)) found.push(["LRI-NAACCR-02", "OBR-32.1.11", `CNN.11 (assigning authority universal ID type) ${kind ? `is "${kind}"` : "is empty"}; it must be NPI, MD, or ISO.`]);
+      if (!["NPI", "MD", "ISO"].includes(kind)) found.push(["LRI-NAACCR-02", "OBR-32.1.11", `CNN.11 (assigning authority universal ID type) ${kind ? "holds an unsupported value" : "is empty"}; it must be NPI, MD, or ISO.`]);
       else if (uid) {
         const valid = kind === "NPI" ? validNpi(uid) : kind === "MD" ? MD.test(uid) : OID.test(uid);
         if (!valid) found.push(["LRI-NAACCR-01", "OBR-32.1.10", `CNN.10 is not ${TYPED_LABELS[kind]} as CNN.11 ${kind} requires.`]);
