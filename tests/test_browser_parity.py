@@ -9,6 +9,12 @@ from lri_validator import validate_message
 from tests.support import CASES, ROOT, VALID, apply_case, finding_key
 
 
+IDENTIFIER_RULES = {
+    "COMPONENT-R", "COMPONENT-X", "HD04-001", "LRI-2", "LRI-3",
+    *(f"LRI-NAACCR-0{number}" for number in range(1, 9)),
+}
+
+
 def javascript_validate(value: str) -> dict[str, object]:
     result = subprocess.run(
         ["node", "tests/js_validate.cjs"], cwd=ROOT, input=json.dumps({"text": value}),
@@ -36,6 +42,8 @@ def test_negative_fixture_parity(case: dict[str, object]) -> None:
     javascript_report = javascript_validate(value)
     assert javascript_report["valid"] == python_report["valid"]
     assert finding_key(javascript_report) == finding_key(python_report)
+    messages = lambda report: [(item["rule_id"], item["location"], item["message"]) for item in report["findings"] if item["rule_id"] in IDENTIFIER_RULES]
+    assert messages(javascript_report) == messages(python_report)
 
 
 def test_unsupported_input_parity() -> None:

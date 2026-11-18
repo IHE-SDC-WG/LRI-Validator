@@ -32,6 +32,13 @@
   const MD = /^[A-Za-z]{2,4}[_-].+$/;
   const DT = /^(?:0000|\d{4}(?:\d{2}(?:\d{2}(?:\d{2}(?:\d{2}(?:\d{2}(?:\.\d{1,4})?)?)?)?)?)?)(?:[+-]\d{4})?$/;
   const ECP = /^(\d{1,9}\.\d{9})(?:__([1-9]\d*))?$/;
+  const HD04_TYPES = ["CLIA", "NPI", "MD", "ISO"];
+  const XCN03_FIELDS = { PV1: [7, 8, 9, 17], ORC: [12], OBR: [10, 16, 28], OBX: [16] };
+  const XON04_FIELDS = { ORC: [21], OBX: [23] };
+  const XCN03_EXCLUDED = [[7, "degree"], [17, "name validity range"]];
+  const NPI_EXAMPLE = ["1234567893", "NPI"];
+  const OID_EXAMPLE = ["2.16.840.1.113883.19.5", "ISO"];
+  const TYPED_LABELS = { NPI: "a valid NPI", MD: "a license number with a 2-4 letter state/province prefix", ISO: "an ISO OID" };
 
   function normalizeMessage(text) {
     let value = String(text).replace(/^\ufeff/, "").trim();
@@ -143,7 +150,8 @@
     if (msh) {
       const ids = field(msh, 21).split("~").map(rep => {
         const id = component(rep, 3);
-        if (id && (!OID.test(id) || component(rep, 4) !== "ISO")) add("LRI-NAACCR-05", "MSH-21", msh.line, "A profile identifier is invalid.");
+        if (id && !OID.test(id)) add("LRI-2", "MSH-21.3", msh.line, "A profile identifier in MSH-21.3 is not an ISO OID.");
+        if (id && component(rep, 4) !== "ISO") add("LRI-3", "MSH-21.4", msh.line, "A profile identifier type in MSH-21.4 is not ISO.");
         return id;
       });
       const o = C.profile_oids;
@@ -157,20 +165,50 @@
     ["PID", "PV1"].forEach(name => all(name).forEach(s => { if (field(s, 1) !== "1") add("SETID-001", `${name}-1`, s.line, "Set ID must be 1."); }));
 
     function typed(uid, kind, location, line, hd) {
-      if (kind === "NPI" && !validNpi(uid)) add(hd ? "LRI-NAACCR-06" : "LRI-NAACCR-03", location, line, "The NPI is invalid.");
-      else if (kind === "MD" && !MD.test(uid)) add(hd ? "LRI-NAACCR-07" : "LRI-NAACCR-04", location, line, "The medical license prefix is invalid.");
-      else if (kind === "ISO" && !OID.test(uid)) add(hd ? "LRI-NAACCR-08" : "LRI-NAACCR-05", location, line, "The ISO OID is invalid.");
+      if (kind === "NPI" && !validNpi(uid)) add(hd ? "LRI-NAACCR-06" : "LRI-NAACCR-03", location, line, "The universal identifier is not a valid NPI.");
+      else if (kind === "MD" && !MD.test(uid)) add(hd ? "LRI-NAACCR-07" : "LRI-NAACCR-04", location, line, "The universal identifier lacks the required state/province prefix.");
+      else if (kind === "ISO" && !OID.test(uid)) add(hd ? "LRI-NAACCR-08" : "LRI-NAACCR-05", location, line, "The universal identifier is not an ISO OID.");
     }
+    function checkHd04(value, separator, location, line, example) {
+      if (!value) return;
+      const namespace = component(value, 1, separator), uid = component(value, 2, separator), kind = component(value, 3, separator);
+      const missing = [["universal ID", uid], ["type", kind]].filter(([, part]) => !part).map(([label]) => label);
+      if (missing.length) {
+        const sample = [namespace || "LOCAL", ...example].join(separator);
+        const message = `${location} is "${value}" with no ${missing.join(" or ")}; HD_04 needs namespace${separator}ID${separator}type, e.g. ${sample}.`;
+        [[2, uid], [3, kind]].forEach(([number, part]) => { if (!part) add("COMPONENT-R", `${location}.${number}`, line, message); });
+      }
+      if (kind && !HD04_TYPES.includes(kind)) add("HD04-001", `${location}.3`, line, `${location}.3 is "${kind}"; HD_04 allows CLIA, NPI, MD, or ISO.`);
+      else if (uid && kind) typed(uid, kind, `${location}.2`, line, true);
+    }
+    if (msh) [3, 4, 5, 6].forEach(n => checkHd04(field(msh, n), "^", `MSH-${n}`, msh.line, OID_EXAMPLE));
     [["ORC", [2, 3, 4]], ["OBR", [2, 3]]].forEach(([name, fields]) => all(name).forEach(s => fields.forEach(n => { const v = field(s, n); if (v) typed(component(v, 3), component(v, 4), `${name}-${n}`, s.line, false); })));
-    [["PV1", [7, 8, 9, 17]], ["ORC", [12]], ["OBR", [16, 28]], ["OBX", [16, 25]]].forEach(([name, fields]) => all(name).forEach(s => fields.forEach(n => {
-      if (field(s, n)) field(s, n).split("~").forEach(rep => { const a = component(rep, 9); if (a) typed(component(a, 2, "&"), component(a, 3, "&"), `${name}-${n}.9`, s.line, true); });
-    })));
+    segments.forEach(s => {
+      (XCN03_FIELDS[s.name] || []).forEach(n => {
+        const location = `${s.name}-${n}`;
+        field(s, n).split("~").forEach(rep => {
+          if (!rep) return;
+          if (!component(rep, 2)) add("COMPONENT-R", `${location}.2`, s.line, `${location}.2 (family name) is empty; XCN_03 requires it.`);
+          XCN03_EXCLUDED.forEach(([c, label]) => { if (component(rep, c)) add("COMPONENT-X", `${location}.${c}`, s.line, `${location}.${c} (${label}) is valued; XCN_03 excludes it.`); });
+          [9, 14].forEach(c => checkHd04(component(rep, c), "&", `${location}.${c}`, s.line, NPI_EXAMPLE));
+        });
+      });
+      (XON04_FIELDS[s.name] || []).forEach(n => field(s, n).split("~").forEach(rep => checkHd04(component(rep, 6), "&", `${s.name}-${n}.6`, s.line, OID_EXAMPLE)));
+    });
     all("OBR").forEach(s => {
-      const cnn = component(field(s, 32), 1); if (!cnn) return;
-      const uid = component(cnn, 10, "&"), kind = component(cnn, 11, "&");
-      if (!uid) add("LRI-NAACCR-01", "OBR-32.1.10", s.line, "CNN.10 is empty.");
-      if (!["NPI", "MD", "ISO"].includes(kind)) add("LRI-NAACCR-02", "OBR-32.1.11", s.line, "CNN.11 is invalid.");
-      else if (uid) typed(uid, kind, "OBR-32.1.10", s.line, false);
+      const ndl = field(s, 32), cnn = component(ndl, 1); if (!cnn) return;
+      const namespace = component(cnn, 9, "&"), uid = component(cnn, 10, "&"), kind = component(cnn, 11, "&");
+      const hints = [];
+      if ([2, 3].some(n => component(ndl, n) && !DT.test(component(ndl, n)))) hints.push("OBR-32.2/OBR-32.3 hold non-timestamp text: the interpreter's parts must be &-separated inside OBR-32.1; ^ starts the next OBR-32 component.");
+      if (namespace && !uid && !kind) hints.push(`CNN.9 is "${namespace}": the identifier type belongs in CNN.11 and the ID in CNN.10, e.g. CMS&2.16.840.1.113883.4.6&ISO.`);
+      const found = [];
+      if (!uid) found.push(["LRI-NAACCR-01", "OBR-32.1.10", "CNN.10 (assigning authority universal ID) is empty."]);
+      if (!["NPI", "MD", "ISO"].includes(kind)) found.push(["LRI-NAACCR-02", "OBR-32.1.11", `CNN.11 (assigning authority universal ID type) ${kind ? `is "${kind}"` : "is empty"}; it must be NPI, MD, or ISO.`]);
+      else if (uid) {
+        const valid = kind === "NPI" ? validNpi(uid) : kind === "MD" ? MD.test(uid) : OID.test(uid);
+        if (!valid) found.push(["LRI-NAACCR-01", "OBR-32.1.10", `CNN.10 is not ${TYPED_LABELS[kind]} as CNN.11 ${kind} requires.`]);
+      }
+      found.forEach(([ruleId, location, message], index) => add(ruleId, location, s.line, hints.length && index === found.length - 1 ? [message, ...hints].join(" ") : message));
     });
 
     const starts = segments.map((s, i) => s.name === "ORC" ? i : -1).filter(i => i >= 0), fillers = new Set();
